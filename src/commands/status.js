@@ -14,6 +14,7 @@ const TIME_UNITS = [
 
 const COMMANDS = [ 'status', 'status.', `what's your status?`, 'what is your status?' ]
 
+
 module.exports = (text, message, client) => {
 	if (COMMANDS.includes(text.toLowerCase())) {
 		const uptime = uptimeToText(Date.now() - client.started_on)
