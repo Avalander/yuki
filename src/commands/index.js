@@ -3,4 +3,5 @@ module.exports = [
 	require('./source'),
 	require('./greet'),
 	require('./update'),
+	require('./version'),
 ]
