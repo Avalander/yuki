@@ -14,7 +14,10 @@ client.on('ready', () => {
 })
 
 client.on('message', message => {
-	if (message.isMentioned(client.user)) {
+	if (message.author.id === client.user.id || message.author.bot) {
+		return
+	}
+	if (message.isMentioned(client.user) || message.channel.type === 'dm') {
 		const text = message.content.replace(`<@${client.user.id}>`, '').trim()
 		const processed = commands.reduce(
 			(processed, cmd) => cmd(text, message, { client, settings }) || processed,
