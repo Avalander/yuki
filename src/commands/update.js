@@ -16,7 +16,9 @@ module.exports = (text, message, { settings }) => {
         return message.channel.send(ACK)
             .then(() => {
                 console.log('Spawning restart process...')
-                child_process.spawn('npm', [ 'run', 'bot:restart' ])
+                const child = child_process.spawn('npm', [ 'run', 'bot:restart' ])
+                child.stdout.on('data', data => console.log(data.toString()))
+                child.stderr.on('data', data => console.log('ERROR', data.toString()))
                 console.log('Done.')
             })
     }
