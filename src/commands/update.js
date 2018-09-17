@@ -14,6 +14,10 @@ module.exports = (text, message, { settings }) => {
             return message.channel.send(`This interface is already in sync with the latest version.`)
         }
         return message.channel.send(ACK)
-            .then(() => child_process.spawn('npm', [ 'run', 'bot:restart' ]))
+            .then(() => {
+                console.log('Spawning restart process...')
+                child_process.spawn('npm', [ 'run', 'bot:restart' ])
+                console.log('Done.')
+            })
     }
 }
