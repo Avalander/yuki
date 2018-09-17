@@ -10,7 +10,7 @@ module.exports = (text, message, { settings }) => {
         }
         const result = child_process.execSync('npm run bot:update').toString()
         console.log(result)
-        if (result.includes('Already up-to-date.')) {
+        if (result.includes('Already up-to-date.') || result.includes('Already up to date.')) {
             return message.channel.send(`This interface is already in sync with the latest version.`)
         }
         return message.channel.send(ACK)
