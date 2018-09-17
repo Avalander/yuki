@@ -15,9 +15,9 @@ const TIME_UNITS = [
 const COMMANDS = [ 'status', 'status.', `what's your status?`, 'what is your status?' ]
 
 
-module.exports = (text, message, client) => {
+module.exports = (text, message, { client, settings }) => {
 	if (COMMANDS.includes(text.toLowerCase())) {
-		const uptime = uptimeToText(Date.now() - client.started_on)
+		const uptime = uptimeToText(Date.now() - settings.started_on)
 		message.channel.send(`I have been functioning according to the specified parameters for the past ${uptime}.`)
 		return true
 	}
