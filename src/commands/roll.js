@@ -23,7 +23,7 @@ module.exports = (text, message) => {
         result = partial[0]
         tokens = partial[1]
     }
-    return result
+    return message.channel.send(result)
 }
 
 const TOKENS = [

@@ -10,7 +10,7 @@ settings.version = version
 
 client.on('ready', () => {
 	settings.started_on = Date.now()
-	console.log('I am ready.')
+	console.log(`[${process.pid}] I am ready.`)
 })
 
 client.on('message', message => {
