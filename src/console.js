@@ -1,12 +1,15 @@
-const { version } = require('../package.json')
-const { bot_token, ...settings } = require('../settings.json')
-
-const commands = require('./commands')
 const readline = require('readline')
 
-settings.version = version
-settings.started_on = Date.now()
+const commands = require('./commands')
 
+
+const settings = {
+	version: 'dev',
+	started_on: Date.now(),
+	admins: [
+		2,
+	],
+}
 
 const client = {
 	user: {
@@ -29,15 +32,16 @@ const yuki = readline.createInterface({
 yuki.on('line', content => {
 	const message = {
 		author: {
-			id: 2,
+			id: content.startsWith('admin>') ? 2 : 3,
 			bot: false,
 		},
 		content,
 		channel,
 	}
+	const text = content.replace(/^admin>(\s)?/, '')
 
 	const processed = commands.reduce(
-		(processed, cmd) => cmd(content, message, { client, settings }) || processed,
+		(processed, cmd) => cmd(text, message, { client, settings }) || processed,
 		false
 	)
 	if (!processed) {

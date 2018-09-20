@@ -5,4 +5,5 @@ module.exports = [
 	require('./update'),
 	require('./version'),
 	require('./restart'),
+	require('./test'),
 ]
