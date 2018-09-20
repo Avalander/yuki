@@ -15,11 +15,11 @@ module.exports = (text, message, { settings }) => {
         }
         return message.channel.send(ACK)
             .then(() => {
-                console.log('Spawning restart process...')
-                const child = child_process.spawn('npm', [ 'run', 'bot:restart' ])
-                child.stdout.on('data', data => console.log(data.toString()))
-                child.stderr.on('data', data => console.log('ERROR', data.toString()))
-                console.log('Done.')
+                console.log(`[${process.pid}] Starting new process...`)
+                const result = child_process.execSync('npm run bot:start').toString()
+                console.log(result)
+                console.log(`[${process.pid}] Exiting now...`)
+                process.exit(0)
             })
     }
 }
