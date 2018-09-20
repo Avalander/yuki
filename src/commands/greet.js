@@ -5,9 +5,8 @@ const MORNING = 'おはよう'
 const AFTERNOON = 'こんにちは'
 const EVENING = 'こんばんは'
 
-const COMMANDS = [ 'hi', 'hello' ]
 
-module.exports = makePipe(textEquals(COMMANDS))
+module.exports = makePipe(textEquals('hi', 'hello'))
     .export((text, message) =>
         message.channel.send(
             chooseGreeting(new Date().getHours())

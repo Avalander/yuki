@@ -6,20 +6,20 @@ module.exports.makePipe = (first, ...fns) => ({
 	}
 })
 
-module.exports.textEquals = expect => ([ text ], next) =>
-	(asArray(expect).includes(text)
+module.exports.textEquals = (...expect) => ([ text ], next) =>
+	(expect.includes(text)
 		? next()
 		: false
 	)
 
-const asArray = obj =>
-	(Array.isArray(obj)
-		? obj
-		: [ obj ]
+module.exports.textContains = expect => ([ text ], next) =>
+	(text.includes(expect)
+		? next()
+		: false
 	)
 
-module.exports.textContains = expect => ([ text ], next) =>
-	(expect.includes(text)
+module.exports.textMatches = expect => ([ text ], next) =>
+	(expect.test(text)
 		? next()
 		: false
 	)
