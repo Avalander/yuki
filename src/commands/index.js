@@ -4,4 +4,5 @@ module.exports = [
 	require('./greet'),
 	require('./update'),
 	require('./version'),
+	require('./restart'),
 ]
