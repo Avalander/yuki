@@ -1,6 +1,7 @@
 const readline = require('readline')
 
 const commands = require('./commands')
+const makeMemory = require('./memory')
 
 
 const settings = {
@@ -10,12 +11,12 @@ const settings = {
 		2,
 	],
 }
-
 const client = {
 	user: {
 		id: 1,
 	}
 }
+const memory = makeMemory().get(1)
 
 const channel = {
 	send: text => {
@@ -41,7 +42,7 @@ yuki.on('line', content => {
 	const text = content.replace(/^admin>(\s)?/, '')
 
 	const processed = commands.reduce(
-		(processed, cmd) => cmd(text, message, { client, settings }) || processed,
+		(processed, cmd) => cmd(text, message, { client, settings, memory }) || processed,
 		false
 	)
 	if (!processed) {

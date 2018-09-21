@@ -6,12 +6,13 @@ const AFTERNOON = 'こんにちは'
 const EVENING = 'こんばんは'
 
 
-module.exports = makePipe(textEquals('hi', 'hello'))
-    .export((text, message) =>
+module.exports = makePipe(
+    textEquals('hi', 'hello'),
+    (text, message) =>
         message.channel.send(
             chooseGreeting(new Date().getHours())
         )
-    )
+)
 
 const chooseGreeting = time =>
     (time >= 5 && time < 12
