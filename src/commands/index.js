@@ -1,3 +1,5 @@
+const remember = require('./remember')
+
 module.exports = [
 	require('./status'),
 	require('./source'),
@@ -6,4 +8,7 @@ module.exports = [
 	require('./version'),
 	require('./restart'),
 	require('./test'),
+	remember.memorise,
+	remember.recall,
+	remember.forget,
 ]
