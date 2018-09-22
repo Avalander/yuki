@@ -10,7 +10,7 @@
     "bot:stop": "./scripts/main.sh stop",
     "bot:update": "./scripts/main.sh update",
     "bot:restart": "./scripts/main.sh restart",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tape 'src/**/*.test.js' | tap-diff"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +19,8 @@
     "discord.js": "^11.4.2"
   },
   "devDependencies": {
-    "nodemon": "^1.18.4"
+    "nodemon": "^1.18.4",
+    "tap-diff": "^0.1.1",
+    "tape": "^4.9.1"
   }
 }
