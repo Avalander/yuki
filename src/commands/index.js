@@ -4,4 +4,7 @@ module.exports = [
 	require('./greet'),
 	require('./update'),
 	require('./version'),
+	require('./roll'),
+	require('./wildMagic'),
+	require('./weather'),
 ]
