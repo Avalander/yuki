@@ -7,8 +7,10 @@ module.exports = [
 	require('./update'),
 	require('./version'),
 	require('./restart'),
-	require('./test'),
 	remember.memorise,
 	remember.recall,
 	remember.forget,
+	require('./roll'),
+	require('./wildMagic'),
+	require('./weather'),
 ]
