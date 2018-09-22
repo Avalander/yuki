@@ -1,13 +1,3 @@
-/*
-module.exports.makePipe = (first, ...fns) => ({
-	export: fn => (text, message, options) => {
-		const next = i => stop =>
-			!stop && (fns[i] && fns[i]([ text, message, options ], next(i + 1)) || fn(text, message, options))
-		return first([ text, message, options ], next(0))
-	}
-})
-*/
-
 module.exports.makePipe = (first, ...fns) => (text, message, options) => {
 	const firstFn = evalFirst(first)
 	const next = i => stop =>
