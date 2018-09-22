@@ -30,12 +30,15 @@ The memory object provides a cache shared among all command handlers, but specif
 
 ```javascript
 const saveMessageHandler = (text, message, { client, settings, memory }) => {
-	const messages = memory.get('messages', [])
-	messages.push(text)
+	memory.set('last-message', {
+		timestamp: Date.now()
+		author: message.author.id,
+		text,
+	})
 }
 
 const listMessagesHandler = (text, message, { client, settings, memory }) => {
-	const messages = memory.get('messages')
-	return message.channel.send(messages)
+	const { author, timestamp } = memory.get('last-message', {})
+	return message.channel.send(`Last message was written by ${author} on ${new Date(timestamp)}`)
 }
 ```
