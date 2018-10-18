@@ -107,6 +107,8 @@ const WINDDESC = [
     '51-74 mph (-8 Fly and Perception checks; ranged weapon attacks impossible; check size Medium; blown away size Tiny)'
 ];
 
+const { checkRole } = require('./util');
+
 let currentSeason;
 let precipitation;
 let temperature;
@@ -155,13 +157,16 @@ function checkForecast() {
     return '*' + currentSeason.name + '*\n' + curP + '\n' + curT + '\n' + curW;
 }
 
-function newForecast() {
-    if (!checkSeason()) return 'You need to set a season first.';
-    else{
-        newPrecipitation();
-        newTemperature();
-        newWind();
-        return checkForecast();
+function newForecast(message) {
+    if (!checkRole(message.author.id, message.guild.roles)) return 'Sorry, you don\'t have permission to do that.';
+    else {
+        if (!checkSeason()) return 'You need to set a season first.';
+        else{
+            newPrecipitation(message);
+            newTemperature(message);
+            newWind(message);
+            return checkForecast();
+        }
     }
 }
 
@@ -170,13 +175,16 @@ function checkPrecipitation() {
     return '**Precipitation**\'s severity is ' + (precipitation + 1) + ': ' + findDesc('precipitation');
 }
 
-function newPrecipitation() {
-    if (!checkSeason()) return 'You need to set a season first.';
-    else{
-        let isRaining = rollD100();
-        if (isRaining < currentSeason.precipitation) precipitation = rollChance(PRECIPTABLE);
-        else precipitation = 0;
-        return checkPrecipitation();
+function newPrecipitation(message) {
+    if (!checkRole(message.author.id, message.guild.roles)) return 'Sorry, you don\'t have permission to do that.';
+    else {
+        if (!checkSeason()) return 'You need to set a season first.';
+        else{
+            let isRaining = rollD100();
+            if (isRaining < currentSeason.precipitation) precipitation = rollChance(PRECIPTABLE);
+            else precipitation = 0;
+            return checkPrecipitation();
+        }
     }
 }
 
@@ -189,17 +197,20 @@ function checkTemperature() {
     return '**Temperature**\'s severity is ' + retT + ': ' + findDesc('temperature');
 }
 
-function newTemperature() {
-    if (!checkSeason()) return 'You need to set a season first.';
-    else{
-        let tempVar = rollD100();
-        for (let i=0;i<TEMPTABLE.length;i++){
-            if (tempVar >= TEMPTABLE[i].minChance && tempVar <= TEMPTABLE[i].maxChance) {
-                temperature = Math.round(currentSeason.temperature + TEMPTABLE[i].variation);
-                break;
+function newTemperature(message) {
+    if (!checkRole(message.author.id, message.guild.roles)) return 'Sorry, you don\'t have permission to do that.';
+    else {
+        if (!checkSeason()) return 'You need to set a season first.';
+        else{
+            let tempVar = rollD100();
+            for (let i=0;i<TEMPTABLE.length;i++){
+                if (tempVar >= TEMPTABLE[i].minChance && tempVar <= TEMPTABLE[i].maxChance) {
+                    temperature = Math.round(currentSeason.temperature + TEMPTABLE[i].variation);
+                    break;
+                }
             }
+            return checkTemperature();
         }
-        return checkTemperature();
     }
 }
 
@@ -208,36 +219,42 @@ function checkWind() {
     return '**Wind**\'s severity is ' + (wind + 1) + ': ' + findDesc('wind');
 }
 
-function newWind() {
-    if (!checkSeason()) return 'You need to set a season first.';
-    else{
-        wind = rollChance(WINDTABLE);
-        return checkWind();
+function newWind(message) {
+    if (!checkRole(message.author.id, message.guild.roles)) return 'Sorry, you don\'t have permission to do that.';
+    else {
+        if (!checkSeason()) return 'You need to set a season first.';
+        else{
+            wind = rollChance(WINDTABLE);
+            return checkWind();
+        }
     }
 }
 
 //Weather functions.
-function setWeather(weather, text) {
-    let severity = text.match(/-?\d+/);
-    let absSeverity = Math.abs(severity);
-    if (absSeverity >= 1 && absSeverity <= 5) {
-        switch (weather) {
-            case 'precipitation':
-                precipitation = --severity;
-                return checkPrecipitation();
-                break;
-            case 'temperature':
-                if (severity > 0) temperature = --severity;
-                if (severity < 0) temperature = ++severity;
-                return checkTemperature();
-                break;
-            case 'wind':
-                wind = --severity;
-                return checkWind();
-                break;
+function setWeather(weather, text, message) {
+    if (!checkRole(message.author.id, message.guild.roles)) return 'Sorry, you don\'t have permission to do that.';
+    else {
+        let severity = text.match(/-?\d+/);
+        let absSeverity = Math.abs(severity);
+        if (absSeverity >= 1 && absSeverity <= 5) {
+            switch (weather) {
+                case 'precipitation':
+                    precipitation = --severity;
+                    return checkPrecipitation();
+                    break;
+                case 'temperature':
+                    if (severity > 0) temperature = --severity;
+                    if (severity < 0) temperature = ++severity;
+                    return checkTemperature();
+                    break;
+                case 'wind':
+                    wind = --severity;
+                    return checkWind();
+                    break;
+            }
+        }else{
+            return 'Severity must be a number between 1 and 5 (or -1 and -5 for cold temperatures).';
         }
-    }else{
-        return 'Severity must be a number between 1 and 5 (or -1 and -5 for cold temperatures).';
     }
 }
 
@@ -247,47 +264,52 @@ function checkSeason() {
     else return currentSeason.name;
 }
 
-function newSeason() {
-    let newSeason = Math.floor(Math.random() * SEASONS.length);
-    return setSeason(SEASONS[newSeason].name);
+function newSeason(message) {
+    if (!checkRole(message.author.id, message.guild.roles)) return 'Sorry, you don\'t have permission to do that.';
+    else {
+        let newSeason = Math.floor(Math.random() * SEASONS.length);
+        return setSeason(SEASONS[newSeason].name, message);
+    }
 }
 
-function setSeason(newSeason){
-    for (let i=0;i<SEASONS.length;i++){
-        if (SEASONS[i].name == newSeason){
-            currentSeason = SEASONS[i];
-            return 'The season has been set to ' + currentSeason.name + '. This is the current forecast.\n' + newForecast();
+function setSeason(newSeason, message){
+    if (!checkRole(message.author.id, message.guild.roles)) return 'Sorry, you don\'t have permission to do that.';
+    else {
+        for (let i=0;i<SEASONS.length;i++){
+            if (SEASONS[i].name == newSeason){
+                currentSeason = SEASONS[i];
+                return 'The season has been set to ' + currentSeason.name + '. This is the current forecast.\n' + newForecast(message);
+            }
         }
     }
-    console.dir(currentSeason);
 }
 
 module.exports = (text, message) => {
     text = text.toLowerCase();
 
-    if (text.startsWith('new forecast')) return message.channel.send(newForecast());
+    if (text.startsWith('new forecast')) return message.channel.send(newForecast(message));
     if (text.startsWith('check forecast')) return message.channel.send(checkForecast());
 
-    if (text.startsWith('set precipitation')) return message.channel.send(setWeather('precipitation', text));
-    if (text.startsWith('set temperature')) return message.channel.send(setWeather('temperature', text));
-    if (text.startsWith('set wind')) return message.channel.send(setWeather('wind', text));
+    if (text.startsWith('set precipitation')) return message.channel.send(setWeather('precipitation', text, message));
+    if (text.startsWith('set temperature')) return message.channel.send(setWeather('temperature', text, message));
+    if (text.startsWith('set wind')) return message.channel.send(setWeather('wind', text, message));
 
     if (text.startsWith('check precipitation')) return message.channel.send(checkPrecipitation());
     if (text.startsWith('check temperature')) return message.channel.send(checkTemperature());
     if (text.startsWith('check wind')) return message.channel.send(checkWind());
 
-    if (text.startsWith('new precipitation')) return message.channel.send(newPrecipitation());
-    if (text.startsWith('new temperature')) return message.channel.send(newTemperature());
-    if (text.startsWith('new wind')) return message.channel.send(newWind());
+    if (text.startsWith('new precipitation')) return message.channel.send(newPrecipitation(message));
+    if (text.startsWith('new temperature')) return message.channel.send(newTemperature(message));
+    if (text.startsWith('new wind')) return message.channel.send(newWind(message));
 
     if (text.startsWith('set season')) {
         let season = text.match(/winter|spring|summer|autumn/);
         if (season == null) {
             return message.channel.send('Sorry, I don\'t know that season.');
         }else{
-            return message.channel.send(setSeason(season));
+            return message.channel.send(setSeason(season, message));
         }
     }
     if (text.startsWith('check season')) return message.channel.send('The current season is ' + checkSeason() + '.');
-    if (text.startsWith('new season')) return message.channel.send(newSeason());
+    if (text.startsWith('new season')) return message.channel.send(newSeason(message));
 }
