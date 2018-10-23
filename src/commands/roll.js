@@ -1,12 +1,11 @@
-const RESPONSES = ['I rolled ', 'Here it is: ', 'Okay. ', 'There you go: '];
-
 const { checkRole } = require('./util');
 
+const rollRegEx = /(\d+)d(\d+|f)/;
+
 let defaultRoll;
-let rollRegEx = /(\d+)d(\d+|f)/;
 
 function addModifier(text){
-    let regEx = /(\+\d+|\-\d+)/;
+    const regEx = /(\+\d+|\-\d+)/;
     if (regEx.test(text)) return regEx.exec(text);
     else return 0;
 }
@@ -20,8 +19,8 @@ function numberToFudge(number) {
 function roll (text) {
     try {
         const [ _, n, dice ] = text.match(rollRegEx);
+        const rolls = new Array;
         let total = 0;
-        let rolls = new Array;
         let modifier =addModifier(text);
         modifier = parseInt(modifier);
         for (let i=n;i>=1;i--) {
@@ -38,11 +37,12 @@ function roll (text) {
         total += modifier;
         let result = total;
         if (n > 1) result += ' (' + rolls.join() + ')';
-        var response = Math.floor(Math.random() * RESPONSES.length);
-        return RESPONSES[response] + '\n' + result;
+        return result;
     }catch (e) {
-        if (defaultRoll != undefined)  return roll(defaultRoll + text);
-        else return 'You must set a default roll or give a valid expression.';
+        return (defaultRoll 
+            ? roll(defaultRoll + text)
+            : 'You must set a default roll or give a valid expression.'
+        );
     }
 }
 
@@ -64,10 +64,22 @@ function setDefault (newDefault, message) {
     }
 }
 
+module.exports.setDefaultRoll = (text, message) => {
+    if (text.toLowerCase().startsWith('set default roll')) return message.channel.send(setDefault(text, message));
+}
+
+module.exports.checkDefaultRoll = (text, message) => {
+    if (text.toLowerCase().startsWith('check default roll')) return message.channel.send(checkDefault());
+}
+
+module.exports.rollSomething = (text, message) => {
+    if (text.toLowerCase().includes('roll')) return message.channel.send(roll(text));
+}
+/*
 module.exports = (text, message) => {
     text = text.toLowerCase();
 
     if (text.startsWith('set default roll')) return message.channel.send(setDefault(text, message));
     else if (text.startsWith('check default roll')) return message.channel.send(checkDefault());
     else if (text.includes('roll')) return message.channel.send(roll(text));
-}
+}*/

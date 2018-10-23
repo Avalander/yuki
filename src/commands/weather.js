@@ -1,3 +1,5 @@
+const { checkRole } = require('./util');
+
 const SEASONS = [{
     name: 'winter',
     precipitation: 30,
@@ -107,8 +109,6 @@ const WINDDESC = [
     '51-74 mph (-8 Fly and Perception checks; ranged weapon attacks impossible; check size Medium; blown away size Tiny)'
 ];
 
-const { checkRole } = require('./util');
-
 let currentSeason;
 let precipitation;
 let temperature;
@@ -159,20 +159,18 @@ function checkForecast() {
 
 function newForecast(message) {
     if (!checkRole(message.author.id, message.guild.roles)) return 'Sorry, you don\'t have permission to do that.';
-    else {
-        if (!checkSeason()) return 'You need to set a season first.';
-        else{
-            newPrecipitation(message);
-            newTemperature(message);
-            newWind(message);
-            return checkForecast();
-        }
+    else if (!checkSeason()) return 'You need to set a season first.';
+    else{
+        newPrecipitation(message);
+        newTemperature(message);
+        newWind(message);
+        return checkForecast();
     }
 }
 
 //Precipitation functions.
 function checkPrecipitation() {
-    return '**Precipitation**\'s severity is ' + (precipitation + 1) + ': ' + findDesc('precipitation');
+    return `**Precipitation**'s severity is ${precipitation + 1}: ${findDesc('precipitation')}.`;
 }
 
 function newPrecipitation(message) {
@@ -194,7 +192,7 @@ function checkTemperature() {
     if (temperature == 0) retT += ' (Cold/Hot)';
     if (temperature < 0) retT += ' (Cold)';
     if (temperature > 0) retT += ' (Hot)';
-    return '**Temperature**\'s severity is ' + retT + ': ' + findDesc('temperature');
+    return `**Temperature**'s severity is ${retT}: ${findDesc('temperature')}.`;
 }
 
 function newTemperature(message) {
@@ -216,7 +214,7 @@ function newTemperature(message) {
 
 //Wind functions.
 function checkWind() {
-    return '**Wind**\'s severity is ' + (wind + 1) + ': ' + findDesc('wind');
+    return `**Wind**'s severity is ${wind + 1}: ${findDesc('wind')}.`;
 }
 
 function newWind(message) {
@@ -241,16 +239,13 @@ function setWeather(weather, text, message) {
                 case 'precipitation':
                     precipitation = --severity;
                     return checkPrecipitation();
-                    break;
                 case 'temperature':
                     if (severity > 0) temperature = --severity;
                     if (severity < 0) temperature = ++severity;
                     return checkTemperature();
-                    break;
                 case 'wind':
                     wind = --severity;
                     return checkWind();
-                    break;
             }
         }else{
             return 'Severity must be a number between 1 and 5 (or -1 and -5 for cold temperatures).';
