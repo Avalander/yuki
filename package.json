@@ -19,7 +19,7 @@
     "discord.js": "^11.4.2"
   },
   "devDependencies": {
-    "nodemon": "^1.18.4",
+    "nodemon": "^1.18.6",
     "tap-diff": "^0.1.1",
     "tape": "^4.9.1"
   }
