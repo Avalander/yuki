@@ -35,3 +35,8 @@ module.exports.authorIsAdmin = (text, message, { settings }, next) =>
 		? next()
 		: message.channel.send('Request denied.')
 	)
+
+module.exports.checkRole = (author_id, roles) => {
+	return roles.filter(({ name }) => [ 'GM', 'Game Master', 'Narrator' ].includes(name))
+		.some(({ members }) => members.has(author_id));
+}
