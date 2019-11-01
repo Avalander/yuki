@@ -11,7 +11,7 @@
     "bot:update": "./scripts/main.sh update",
     "bot:restart": "./scripts/main.sh restart",
     "test": "tape 'src/**/*.test.js' | tap-diff",
-    "test:coverage": "nyc --reporter=lcov npm run test"
+    "test:coverage": "nyc npm run test"
   },
   "keywords": [],
   "author": "",
