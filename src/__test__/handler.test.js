@@ -12,10 +12,7 @@ const cmdExpectRun = (t, message = 'Invoked command handler') => () => {
 
 const cmdExpectNotRun = (t, message = 'Invoked command handler') => () => t.fail(message)
 
-const cmdNoHandler = (t, message = 'Invoked command handler') => () => {
-	t.pass(message)
-	return false
-}
+const cmdNoHandler = (t, message = 'Invoked command handler') => () => t.pass(message)
 
 const client = {
 	user: {
