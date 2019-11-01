@@ -73,7 +73,7 @@ const getRollExps = text => {
     return text.toLowerCase().replace(efs, "").replace(noRoll, "")
 }
 
-let defaultRoll;
+let defaultRoll
 
 const setDefaultRoll = (text, msg) => {
     if(!checkRole(msg.author.id, msg.guild.roles)) return "Sorry, you don't have permission to do that."
