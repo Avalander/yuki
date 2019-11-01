@@ -4,7 +4,7 @@ module.exports = makePipe(
     textContains("roll"),
     (text, message) => 
         text.includes("set default roll") 
-            ? message.channel.send(setDefaultRoll(text))
+            ? message.channel.send(setDefaultRoll(text, message))
             : message.channel.send(parseRolls(text))
 )
 
@@ -75,7 +75,8 @@ const getRollExps = text => {
 
 let defaultRoll;
 
-const setDefaultRoll = text => {
+const setDefaultRoll = (text, msg) => {
+    if(!checkRole(msg.author.id, msg.guild.roles)) return "Sorry, you don't have permission to do that."
     const str = getRollExps(text).trim()
     if (str === "") return "Invalid expression"
     else {
