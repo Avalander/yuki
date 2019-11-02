@@ -8,6 +8,18 @@ module.exports = makePipe(
             : message.channel.send(parseRolls(text))
 )
 
+let defaultRoll
+
+const regEx = {
+    gModifier: /[+-]\d+(?!d(?:\d+|f))/g,
+    gRoll: /[+-](\d+)d(\d+|f)/g,
+    roll: /[+-](\d+)d(\d+|f)/,
+    tEfs: /^f|[^d]f|\Ddf/g,
+    tNoRoll: /\Dd|d[^0-9f]|[a-ceg-z]/g,
+    tSplitter: /(?=[^+-]\d+d(?:\d+|f))/,
+    tTrimmer: /[^-+0-9df\s]/g
+}
+
 const randInt = (from, to) => Math.floor(Math.random() * (to - from + 1)) + from
 
 const roller = (dice, start, end) => Array(parseInt(dice)).fill(1).reduce((a, b) => {
@@ -16,8 +28,7 @@ const roller = (dice, start, end) => Array(parseInt(dice)).fill(1).reduce((a, b)
 }, { result: 0, rolls: [] })
   
 const reduceRolls = (a, b) => {
-    const regEx = /[+-](\d+)d(\d+|f)/
-    const exp = b.match(regEx)
+    const exp = b.match(regEx.roll)
 
     const isFudge = exp[2] == "f" ? true : false
     const roll = isFudge ? roller(exp[1], -1, 1) : roller(exp[1], 1, exp[2])
@@ -35,29 +46,20 @@ const addModifiers = (text, regEx, reducer, initVal) => {
     return mod != null ? mod.reduce(reducer, initVal) : 0
 }
 
-const addNumbers = text => {
-    const regEx = /[+-]\d+(?!d(?:\d+|f))/g
-    return addModifiers(text, regEx, reduceNumber, 0)
-}
+const addNumbers = text => addModifiers(text, regEx.gModifier, reduceNumber, 0)
 
-const addRolls = text => { 
-    const regEx = /[+-](\d+)d(\d+|f)/g
-    return addModifiers(text, regEx, reduceRolls, { result: 0, rolls: [] })
-}
+const addRolls = text => addModifiers(text, regEx.gRoll, reduceRolls, { result: 0, rolls: [] })
 
 const parseRolls = text => {
-    const splitter = /(?=[^+-]\d+d(?:\d+|f))/
-    const trimmer = /[^-+0-9df]/g
-
     const str = getRollExps(text)
     return str === ""
         ? defaultRoll 
             ? parseRolls(defaultRoll)
             : "Invalid expression"
-        : str.split(splitter)
+        : str.split(regEx.tSplitter)
             .map(x => {
                 const rolls = addRolls(`+${x.trim()}`)
-                return `**${rolls.result + addNumbers(x)}** (${rolls.rolls.join("),(")}) [_${x.replace(trimmer, "")}_]`
+                return `**${rolls.result + addNumbers(x)}** (${rolls.rolls.join("),(")}) [_${x.split(" ").join("")}_]`
             })
             .reduce((a, b) => `${a}\n${b}`, "There you go:")
 }
@@ -67,13 +69,7 @@ const fudgify = num => {
     return map[num]
 }
 
-const getRollExps = text => {
-    const efs = /^f|[^d]f|\Ddf/g
-    const noRoll = /\Dd|d[^0-9f]|[a-ceg-z]/g
-    return text.toLowerCase().replace(efs, "").replace(noRoll, "")
-}
-
-let defaultRoll
+const getRollExps = text => text.toLowerCase().replace(regEx.tEfs, "").replace(regEx.tNoRoll, "").replace(regEx.tTrimmer, "").trim()
 
 const setDefaultRoll = (text, msg) => {
     if(!checkRole(msg.author.id, msg.guild.roles)) return "Sorry, you don't have permission to do that."
