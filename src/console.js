@@ -2,6 +2,7 @@ const readline = require('readline')
 
 const commands = require('./commands')
 const makeMemory = require('./memory')
+const makeHandler = require('./handler')
 
 
 const settings = {
@@ -18,6 +19,13 @@ const client = {
 }
 const memory = makeMemory().get(1)
 
+const handler = makeHandler({
+	client,
+	commands,
+	memory,
+	settings,
+})
+
 const channel = {
 	send: text => {
 		console.log(`yuki> ${text}`)
@@ -30,24 +38,17 @@ const yuki = readline.createInterface({
 	output: process.stdout,
 })
 
-yuki.on('line', content => {
+yuki.on('line', line => {
 	const message = {
 		author: {
-			id: content.startsWith('admin>') ? 2 : 3,
+			id: line.startsWith('admin>') ? 2 : 3,
 			bot: false,
 		},
-		content,
+		content: line.replace(/^admin>(\s)?/, ''),
 		channel,
+		isMentioned: () => true,
 	}
-	const text = content.replace(/^admin>(\s)?/, '')
-
-	const processed = commands.reduce(
-		(processed, cmd) => cmd(text, message, { client, settings, memory }) || processed,
-		false
-	)
-	if (!processed) {
-		message.channel.send(`Sorry, I didn't understand your request.`)
-	}
+	handler(message)
 })
 
 console.log('yuki> I am ready.')

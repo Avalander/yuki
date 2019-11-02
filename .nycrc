@@ -1,0 +1,10 @@
+{
+	"exclude": [
+		"**/__test__/**"
+	],
+	"reporter": [
+		"lcov",
+		"text",
+		"text-summary"
+	]
+}
