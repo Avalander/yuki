@@ -18,8 +18,8 @@ module.exports.textEquals = (...expect) => (text, message, options, next) =>
 		: false
 	)
 
-module.exports.textContains = expect => (text, message, options, next) =>
-	(text.includes(expect)
+module.exports.textContains = (...expect) => (text, message, options, next) =>
+	(expect.some(x => text.includes(x))
 		? next()
 		: false
 	)

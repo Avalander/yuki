@@ -11,6 +11,7 @@ module.exports = [
 	remember.recall,
 	remember.forget,
 	require('./roll'),
-	require('./wildMagic'),
 	require('./weather'),
+	require('./welcome'),
+	require('./wildMagic'),
 ]
