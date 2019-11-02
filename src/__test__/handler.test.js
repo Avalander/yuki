@@ -17,7 +17,7 @@ const cmdNoHandler = (t, message = 'Invoked command handler') => () => t.pass(me
 const client = {
 	user: {
 		id: 1,
-	}
+	},
 }
 
 const userAuthor = {
@@ -123,7 +123,7 @@ test('handler sends error message when command is not recognised', t => {
 		channel: {
 			id: '123',
 			send: text =>
-				t.equal(text, `Sorry, I didn't understand your request.`)
+				t.equal(text, `Sorry, I didn't understand your request.`),
 		},
 		content: 'test',
 	}

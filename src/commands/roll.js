@@ -17,12 +17,12 @@ const regEx = {
     tEfs: /^f|[^d]f|\Ddf/g,
     tNoRoll: /\Dd|d[^0-9f]|[a-ceg-z]/g,
     tSplitter: /(?=[^+-]\d+d(?:\d+|f))/,
-    tTrimmer: /[^-+0-9df\s]/g
+    tTrimmer: /[^-+0-9df\s]/g,
 }
 
 const randInt = (from, to) => Math.floor(Math.random() * (to - from + 1)) + from
 
-const roller = (dice, start, end) => Array(parseInt(dice)).fill(1).reduce((a, b) => {
+const roller = (dice, start, end) => Array(parseInt(dice)).fill(1).reduce((a) => {
     const roll = randInt(start, end)
     return { result: a.result + roll, rolls: a.rolls.concat(roll) }
 }, { result: 0, rolls: [] })

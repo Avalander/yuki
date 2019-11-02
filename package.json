@@ -11,7 +11,8 @@
     "bot:update": "./scripts/main.sh update",
     "bot:restart": "./scripts/main.sh restart",
     "test": "tape 'src/**/*.test.js' | tap-diff",
-    "test:coverage": "nyc npm run test"
+    "test:coverage": "nyc npm run test",
+    "lint": "eslint src/**/*.js"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,7 @@
     "discord.js": "^11.5.1"
   },
   "devDependencies": {
+    "eslint": "^6.6.0",
     "nodemon": "^1.19.4",
     "nyc": "^14.1.1",
     "tap-diff": "^0.1.1",
