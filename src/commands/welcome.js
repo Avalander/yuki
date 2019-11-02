@@ -1,7 +1,7 @@
 const { makePipe, textContains } = require('./util')
 
 module.exports = makePipe(
-    textContains('thank', 'cheers', 'brilliant', 'you\'re a star'),
+    textContains('thank', 'cheers', 'brilliant', 'you\'re a star', 'you have my gratitude'),
     (text, message) => message.channel.send(chooseResponse())
 )
 
@@ -13,4 +13,5 @@ const responses = [
     'No problem',
     'Gratitude acknowledged',
     '_nods_',
+    '_imperceptible nod_',
 ]
