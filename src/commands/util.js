@@ -19,7 +19,7 @@ module.exports.textEquals = (...expect) => (text, message, options, next) =>
 	)
 
 module.exports.textContains = (...expect) => (text, message, options, next) =>
-	(expect.some(x => text.includes(x))
+	(expect.some(x => text.toLowerCase().includes(x))
 		? next()
 		: false
 	)

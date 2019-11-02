@@ -14,4 +14,5 @@ const responses = [
     'Gratitude acknowledged',
     '_nods_',
     '_imperceptible nod_',
+    '. . .',
 ]
