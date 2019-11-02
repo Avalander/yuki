@@ -35,8 +35,8 @@ function rollWildMagic (magicKind, text = wildChance) {
     let itHappens = Math.floor(Math.random() * 100);
     let result;
     let chance;
-    const regEx = /\d+\%/;
-    if (regEx.test(text)) chance = parseInt(/(\d+)\%/.exec(text));
+    const regEx = /\d+%/;
+    if (regEx.test(text)) chance = parseInt(/(\d+)%/.exec(text));
     else chance = wildChance;
     if (itHappens < chance) {
         result = 'Oops, something funny\'s going on.\n';

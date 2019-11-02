@@ -38,5 +38,5 @@ module.exports.authorIsAdmin = (text, message, { settings }, next) =>
 
 module.exports.checkRole = (author_id, roles) => {
 	return roles.filter(({ name }) => [ 'GM', 'Game Master', 'Narrator' ].includes(name))
-		.some(({ members }) => members.has(author_id));
+		.some(({ members }) => members.has(author_id))
 }
