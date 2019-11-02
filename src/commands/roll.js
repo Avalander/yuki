@@ -1,85 +1,82 @@
-const { checkRole } = require('./util');
+const { checkRole, makePipe, textContains } = require('./util')
 
-const rollRegEx = /(\d+)d(\d+|f)/;
+module.exports = makePipe(
+    textContains("roll"),
+    (text, message) => 
+        text.includes("set default roll") 
+            ? message.channel.send(setDefaultRoll(text, message))
+            : message.channel.send(parseRolls(text))
+)
 
-let defaultRoll;
+let defaultRoll
 
-function addModifier(text){
-    const regEx = /(\+\d+|\-\d+)/;
-    if (regEx.test(text)) return regEx.exec(text);
-    else return 0;
+const regEx = {
+    gModifier: /[+-]\d+(?!d(?:\d+|f))/g,
+    gRoll: /[+-](\d+)d(\d+|f)/g,
+    roll: /[+-](\d+)d(\d+|f)/,
+    tEfs: /^f|[^d]f|\Ddf/g,
+    tNoRoll: /\Dd|d[^0-9f]|[a-ceg-z]/g,
+    tSplitter: /(?=[^+-]\d+d(?:\d+|f))/,
+    tTrimmer: /[^-+0-9df\s]/g
 }
 
-function numberToFudge(number) {
-    if (number > 0) return '+';
-    if (number < 0) return '-';
-    if (number == 0) return '  ';
+const randInt = (from, to) => Math.floor(Math.random() * (to - from + 1)) + from
+
+const roller = (dice, start, end) => Array(parseInt(dice)).fill(1).reduce((a, b) => {
+    const roll = randInt(start, end)
+    return { result: a.result + roll, rolls: a.rolls.concat(roll) }
+}, { result: 0, rolls: [] })
+  
+const reduceRolls = (a, b) => {
+    const exp = b.match(regEx.roll)
+
+    const isFudge = exp[2] == "f" ? true : false
+    const roll = isFudge ? roller(exp[1], -1, 1) : roller(exp[1], 1, exp[2])
+    const rollArr = isFudge ? a.rolls.concat([roll.rolls.map(x => fudgify(x))]) : a.rolls.concat([roll.rolls])
+
+    return exp[0].startsWith("+") 
+        ? { result: a.result + roll.result, rolls: rollArr }
+        : { result: a.result - roll.result, rolls: rollArr }
 }
 
-function roll (text) {
-    try {
-        const [ _, n, dice ] = text.match(rollRegEx);
-        const rolls = new Array;
-        let total = 0;
-        let modifier =addModifier(text);
-        modifier = parseInt(modifier);
-        for (let i=n;i>=1;i--) {
-            let result;
-            if (dice == 'f') {
-                result = Math.floor(Math.random() * 3) -1 ;
-            }else{
-                result = Math.floor(Math.random() * dice) + 1;
-            }
-            total += result;
-            if (dice == 'f') result = numberToFudge(result);
-            rolls.push(result);
-        }
-        total += modifier;
-        let result = total;
-        if (n > 1) result += ' (' + rolls.join() + ')';
-        return result;
-    }catch (e) {
-        return (defaultRoll 
-            ? roll(defaultRoll + text)
-            : 'You must set a default roll or give a valid expression.'
-        );
+const reduceNumber = (a, b) => a + parseInt(b)
+
+const addModifiers = (text, regEx, reducer, initVal) => {
+    const mod = text.match(regEx)
+    return mod != null ? mod.reduce(reducer, initVal) : 0
+}
+
+const addNumbers = text => addModifiers(text, regEx.gModifier, reduceNumber, 0)
+
+const addRolls = text => addModifiers(text, regEx.gRoll, reduceRolls, { result: 0, rolls: [] })
+
+const parseRolls = text => {
+    const str = getRollExps(text)
+    return str === ""
+        ? defaultRoll 
+            ? parseRolls(defaultRoll)
+            : "Invalid expression"
+        : str.split(regEx.tSplitter)
+            .map(x => {
+                const rolls = addRolls(`+${x.trim()}`)
+                return `**${rolls.result + addNumbers(x)}** (${rolls.rolls.join("),(")}) [_${x.split(" ").join("")}_]`
+            })
+            .reduce((a, b) => `${a}\n${b}`, "There you go:")
+}
+
+const fudgify = num => {
+    const map = { "-1": "-", "0": " ", "1": "+" }
+    return map[num]
+}
+
+const getRollExps = text => text.toLowerCase().replace(regEx.tEfs, "").replace(regEx.tNoRoll, "").replace(regEx.tTrimmer, "").trim()
+
+const setDefaultRoll = (text, msg) => {
+    if(!checkRole(msg.author.id, msg.guild.roles)) return "Sorry, you don't have permission to do that."
+    const str = getRollExps(text).trim()
+    if (str === "") return "Invalid expression"
+    else {
+        defaultRoll = str
+        return `I've set default roll to ${defaultRoll}.`
     }
 }
-
-function checkDefault() {
-    return 'Default roll is ' + defaultRoll + '.';
-}
-
-function setDefault (newDefault, message) {
-    if (checkRole(message.author.id, message.guild.roles)) {
-        try {
-            const [ roll, n, dice ] = rollRegEx.exec(newDefault);
-            defaultRoll = roll;
-            return 'Default roll has been set to ' + defaultRoll + '.';
-        }catch (e) {
-            return 'You must insert a valid expression.';
-        }
-    }else{
-        return 'Sorry, you don\'t have permission to do that.';
-    }
-}
-
-module.exports.setDefaultRoll = (text, message) => {
-    if (text.toLowerCase().startsWith('set default roll')) return message.channel.send(setDefault(text, message));
-}
-
-module.exports.checkDefaultRoll = (text, message) => {
-    if (text.toLowerCase().startsWith('check default roll')) return message.channel.send(checkDefault());
-}
-
-module.exports.rollSomething = (text, message) => {
-    if (text.toLowerCase().includes('roll')) return message.channel.send(roll(text));
-}
-/*
-module.exports = (text, message) => {
-    text = text.toLowerCase();
-
-    if (text.startsWith('set default roll')) return message.channel.send(setDefault(text, message));
-    else if (text.startsWith('check default roll')) return message.channel.send(checkDefault());
-    else if (text.includes('roll')) return message.channel.send(roll(text));
-}*/

@@ -1,5 +1,4 @@
 const remember = require('./remember')
-const roll = require('./roll')
 
 module.exports = [
 	require('./status'),
@@ -11,9 +10,7 @@ module.exports = [
 	remember.memorise,
 	remember.recall,
 	remember.forget,
-	roll.setDefaultRoll,
-	roll.checkDefaultRoll,
-	roll.rollSomething,
+	require('./roll'),
 	require('./wildMagic'),
 	require('./weather'),
 ]
