@@ -1,3 +1,4 @@
+const persist = require('./persist')
 const remember = require('./remember')
 
 module.exports = [
@@ -14,4 +15,7 @@ module.exports = [
 	require('./weather'),
 	require('./welcome'),
 	require('./wildMagic'),
+	persist.save,
+	persist.recall,
+	persist.forget,
 ]

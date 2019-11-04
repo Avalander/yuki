@@ -2,6 +2,8 @@
 	"exclude": [
 		"**/__test__/**"
 	],
+	"src": "src/**/*.js",
+	"all": true,
 	"reporter": [
 		"lcov",
 		"text",
