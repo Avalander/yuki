@@ -1,4 +1,5 @@
 const { checkRole, makePipe, textContains } = require('./util')
+const { randInt } = require('../randtools')
 
 module.exports = makePipe(
     textContains("roll"),
@@ -19,8 +20,6 @@ const regEx = {
     tSplitter: /(?=[^+-]\d+d(?:\d+|f))/,
     tTrimmer: /[^-+0-9df\s]/g,
 }
-
-const randInt = (from, to) => Math.floor(Math.random() * (to - from + 1)) + from
 
 const roller = (dice, start, end) => Array(parseInt(dice)).fill(1).reduce((a) => {
     const roll = randInt(start, end)
