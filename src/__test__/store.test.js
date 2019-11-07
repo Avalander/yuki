@@ -33,7 +33,7 @@ test('load', t => {
 				t.equal(dir, 'data/1/pony')
 				t.deepEqual(options, { encoding: 'utf8' })
 				return Promise.resolve('Twilight Sparkle')
-			}
+			},
 		}) ('data') ('1')
 
 		store.load('pony')
@@ -122,7 +122,7 @@ test('remove', t => {
 			removeFile: x => {
 				t.equal(x, 'data/1/pony')
 				return Promise.resolve(x)
-			}
+			},
 		}) ('data') ('1')
 
 		store.remove('pony')
