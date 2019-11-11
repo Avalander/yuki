@@ -126,7 +126,7 @@ test('handler sends error message when command is not recognised', t => {
 		channel: {
 			id: '123',
 			send: text =>
-				t.equal(text, `Sorry, I didn't understand your request.`),
+				t.equal(text, `Sorry, I did not understand your request.`),
 		},
 		content: 'test',
 	}
