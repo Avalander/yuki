@@ -14,6 +14,12 @@ const cmdExpectNotRun = (t, message = 'Invoked command handler') => () => t.fail
 
 const cmdNoHandler = (t, message = 'Invoked command handler') => () => t.pass(message)
 
+const cmdThrowError = () => {
+	throw new Error('ಠ_ಠ')
+}
+
+const cmdRejectError = () => Promise.reject(new Error('ಠ_ಠ'))
+
 const client = {
 	user: {
 		id: 1,
@@ -110,7 +116,7 @@ const runNoCmdHandler = t => makeHandler({
 	client,
 	commands: [ cmdNoHandler(t) ],
 	memory: {
-		get: () => { },
+		get: () => {},
 	},
 	store: () => {},
 })
@@ -131,4 +137,34 @@ test('handler sends error message when command is not recognised', t => {
 		content: 'test',
 	}
 	runNoCmdHandler(t) (message)
+})
+
+const runErrorCmdHandler = cmd => makeHandler({
+	client,
+	commands: [ cmd ],
+	memory: {
+		get: () => {},
+	},
+	store: () => {},
+})
+
+;([
+	[ 'throws error', cmdThrowError ],
+	[ 'rejects', cmdRejectError ],
+]).forEach(([ s, cmdHandler ]) => {
+	test(`handler sends error message when command ${s}`, t => {
+		t.plan(1)
+		const message = {
+			author: userAuthor,
+			isMentioned: () => true,
+			channel: {
+				id: '123',
+				send: text => {
+					t.equal(text, `Sorry, I could not process your request.\n> Error: ಠ_ಠ`)
+				},
+			},
+			content: 'test',
+		}
+		runErrorCmdHandler(cmdHandler) (message)
+	})
 })

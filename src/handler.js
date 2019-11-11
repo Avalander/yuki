@@ -37,7 +37,11 @@ const handle = (commands, memory, settings, store) => (message, client) => {
 
 const runAsync = (commands, ...args) =>
 	commands.reduce(
-		(prev, cmd) => prev.then(processed => Promise.all([ processed, cmd(...args) ]))
+		(prev, cmd) => prev
+			.then(processed => Promise.all([
+				processed,
+				cmd(...args)
+			]))
 			.then(([ processed, result ]) => result || processed),
 		Promise.resolve()
 	)
