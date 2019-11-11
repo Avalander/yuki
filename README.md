@@ -5,7 +5,7 @@ This is a simple discord bot written with discord.js.
 ## Command handler
 
 ```javascript
-const handler = (text, message, { client, settings, memory }) => {
+const handler = (text, message, { client, settings, memory, store }) => {
 	// Handle command here
 }
 ```
@@ -19,7 +19,8 @@ const handler = (text, message, { client, settings, memory }) => {
   - `version`: a string with the bot's current version.
   - `started_on`: a timestamp of when the bot was started in milliseconds.
   - `admins`: a list of discord user ids that are allowed to invoke admin commands.
-- `memory`: a [memory object](#memory-object).
+- `memory`: a [memory object](#memory-api).
+- `store`: a [store object](#store-api).
 
 ## Memory API
 
