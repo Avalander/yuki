@@ -13,5 +13,4 @@ module.exports = [
 	require('./roll'),
 	require('./weather'),
 	require('./welcome'),
-	require('./wildMagic'),
 ]
