@@ -24,9 +24,24 @@ const handle = (commands, memory, settings, store) => (message, client) => {
 		memory: memory.get(message.channel.id),
 		store: store(message.channel.id),
 	}
-	const processed = commands.reduce(
-		(processed, cmd) => cmd(text, message, options) || processed,
-		false
-	)
-	if (!processed) message.channel.send(`Sorry, I didn't understand your request.`)
+	return runAsync(commands, text, message, options)
+		.then(processed => processed
+			? null
+			: message.channel.send(`Sorry, I did not understand your request.`)
+		)
+		.catch(error => {
+			console.error(error)
+			message.channel.send(`Sorry, I could not process your request.\n> ${error}`)
+		})
 }
+
+const runAsync = (commands, ...args) =>
+	commands.reduce(
+		(prev, cmd) => prev
+			.then(processed => Promise.all([
+				processed,
+				cmd(...args)
+			]))
+			.then(([ processed, result ]) => result || processed),
+		Promise.resolve()
+	)
