@@ -1,7 +1,10 @@
 {
 	"exclude": [
-		"**/__test__/**"
+		"**/__test__/**",
+		"src/system.js"
 	],
+	"src": "src/**/*.js",
+	"all": true,
 	"reporter": [
 		"lcov",
 		"text",

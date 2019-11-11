@@ -31,6 +31,7 @@ const userAuthor = {
 const noRunHandler = t => makeHandler({
 	client,
 	commands: [ cmdExpectNotRun(t) ],
+	store: () => {},
 })
 
 test('handler does not process message when author is bot', t => {
@@ -75,6 +76,7 @@ const runHandler = t => makeHandler({
 	memory: {
 		get: () => {},
 	},
+	store: () => {},
 })
 
 test('handler processes message when Yuki is mentioned', t => {
@@ -110,6 +112,7 @@ const runNoCmdHandler = t => makeHandler({
 	memory: {
 		get: () => { },
 	},
+	store: () => {},
 })
 
 test('handler sends error message when command is not recognised', t => {

@@ -3,14 +3,21 @@
 const { version } = require('../package.json')
 const { bot_token, ...options } = require('../settings.json')
 
+const path = require('path')
+
 const Discord = require('discord.js')
+
 const makeMemory = require('./memory')
+const { makeStore } = require('./store')
 const commands = require('./commands')
 const makeHandler = require('./handler')
 
 
 const client = new Discord.Client()
 const memory = makeMemory()
+
+const base_path = path.resolve(__dirname, '..', 'data')
+const store = makeStore(base_path)
 
 client.on('ready', () => {
 	const settings = {
@@ -23,6 +30,7 @@ client.on('ready', () => {
 		commands,
 		memory,
 		settings,
+		store,
 	})
 
 	client.on('message', handler)

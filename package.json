@@ -10,7 +10,7 @@
     "bot:stop": "./scripts/main.sh stop",
     "bot:update": "./scripts/main.sh update",
     "bot:restart": "./scripts/main.sh restart",
-    "test": "tape 'src/**/*.test.js' | tap-diff",
+    "test": "tape 'src/**/*.test.js' | tap-dot",
     "test:coverage": "nyc npm run test",
     "lint": "eslint src/**/*.js"
   },
@@ -25,6 +25,7 @@
     "nodemon": "^1.19.4",
     "nyc": "^14.1.1",
     "tap-diff": "^0.1.1",
+    "tap-dot": "^2.0.0",
     "tape": "^4.9.1"
   }
 }

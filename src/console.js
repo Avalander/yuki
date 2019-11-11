@@ -1,8 +1,14 @@
 const readline = require('readline')
+const path = require('path')
 
 const commands = require('./commands')
 const makeMemory = require('./memory')
 const makeHandler = require('./handler')
+const { makeStore } = require('./store')
+
+const base_path = path.resolve(__dirname, 'data')
+const store = makeStore(base_path)
+
 
 
 const settings = {
@@ -17,20 +23,22 @@ const client = {
 		id: 1,
 	}
 }
-const memory = makeMemory().get(1)
+const memory = makeMemory()
 
 const handler = makeHandler({
 	client,
 	commands,
 	memory,
 	settings,
+	store,
 })
 
 const channel = {
 	send: text => {
 		console.log(`yuki> ${text}`)
 		return Promise.resolve()
-	}
+	},
+	id: 'the-channel',
 }
 
 const yuki = readline.createInterface({
