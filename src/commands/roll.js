@@ -3,13 +3,11 @@ const { randInt } = require('../randtools')
 
 module.exports = makePipe(
     textContains("roll"),
-    (text, message) => 
+    (text, message, { memory }) => 
         text.includes("set default roll") 
-            ? message.channel.send(setDefaultRoll(text, message))
-            : message.channel.send(parseRolls(text))
+            ? message.channel.send(setDefaultRoll(text, message, memory))
+            : message.channel.send(parseRolls(text, memory))
 )
-
-let defaultRoll
 
 const regEx = {
     gModifier: /[+-]\d+(?!d(?:\d+|f))/g,
@@ -49,11 +47,11 @@ const addNumbers = text => addModifiers(text, regEx.gModifier, reduceNumber, 0)
 
 const addRolls = text => addModifiers(text, regEx.gRoll, reduceRolls, { result: 0, rolls: [] })
 
-const parseRolls = text => {
+const parseRolls = (text, memory) => {
     const str = getRollExps(text)
     return str === ""
-        ? defaultRoll 
-            ? parseRolls(defaultRoll)
+        ? Object.entries(memory.get('defaultRoll')).length > 0
+            ? parseRolls(memory.get('defaultRoll'), memory)
             : "Invalid expression"
         : str.split(regEx.tSplitter)
             .map(x => {
@@ -70,12 +68,12 @@ const fudgify = num => {
 
 const getRollExps = text => text.toLowerCase().replace(regEx.tEfs, "").replace(regEx.tNoRoll, "").replace(regEx.tTrimmer, "").trim()
 
-const setDefaultRoll = (text, msg) => {
+const setDefaultRoll = (text, msg, memory) => {
     if(!checkRole(msg.author.id, msg.guild.roles)) return "Sorry, you don't have permission to do that."
     const str = getRollExps(text).trim()
     if (str === "") return "Invalid expression"
     else {
-        defaultRoll = str
-        return `I've set default roll to ${defaultRoll}.`
+        memory.set('defaultRoll', str)
+        return `I've set default roll to ${memory.get('defaultRoll')}.`
     }
 }
