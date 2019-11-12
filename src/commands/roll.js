@@ -76,13 +76,3 @@ const setDefaultRoll = (text, message, memory) => getClearance(message, () => {
         return `I've set default roll to ${memory.get('defaultRoll')}.`
     }
 })
-
-/*const setDefaultRoll = (text, msg, memory) => {
-    if(!checkRole(msg)) return "Sorry, you don't have permission to do that."
-    const str = getRollExps(text).trim()
-    if (str === "") return "Invalid expression"
-    else {
-        memory.set('defaultRoll', str)
-        return `I've set default roll to ${memory.get('defaultRoll')}.`
-    }
-}*/
