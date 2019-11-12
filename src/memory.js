@@ -3,11 +3,11 @@ const ChannelMemory = () => {
 
     return {
         get: (key, defaultValue={}) => {
-            caches[key] = caches[key] || defaultValue
+            caches[key] = caches[key] != undefined ? caches[key] : defaultValue
             return caches[key]
         },
         set: (key, value) =>
-            caches[key] = value
+            caches[key] = value,
     }
 }
 

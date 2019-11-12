@@ -1,4 +1,5 @@
 const { checkRole } = require('./util');
+const rnd = require('../randtools')
 
 const SEASONS = [{
     name: 'winter',
@@ -20,21 +21,17 @@ const SEASONS = [{
 ];
 
 const PRECIPTABLE = [{
-    minChance: 0,
-    maxChance: 9,
-    severity: 1
+    chance: 10,
+    severity: 1,
 },{
-    minChance: 10,
-    maxChance: 29,
-    severity: 2
+    chance: 30,
+    severity: 2,
 },{
-    minChance: 30,
-    maxChance: 89,
-    severity: 3
+    chance: 90,
+    severity: 3,
 },{
-    minChance: 90,
-    maxChance: 99,
-    severity: 4
+    chance: 100,
+    severity: 4,
 }]
 
 const PRECIPDESC =[
@@ -46,25 +43,20 @@ const PRECIPDESC =[
 ];
 
 const TEMPTABLE = [{
-    minChance: 0,
-    maxChance: 4,
-    variation: -1.5
+    chance: 5,
+    variation: -1.5,
 },{
-    minChance: 5,
-    maxChance: 34,
-    variation: -0.5
+    chance: 35,
+    variation: -0.5,
 },{
-    minChance: 35,
-    maxChance: 74,
-    variation: 0
+    chance: 75,
+    variation: 0,
 },{
-    minChance: 75,
-    maxChance: 98,
-    variation: 0.5
+    chance: 99,
+    variation: 0.5,
 },{
-    minChance: 99,
-    maxChance: 99,
-    variation: 1.5
+    chance: 99,
+    variation: 1.5,
 }];
 
 const TEMPDESC = [
@@ -80,25 +72,20 @@ const TEMPDESC = [
 ];
 
 const WINDTABLE = [{
-    minChance: 0,
-    maxChance: 49,
-    severity: 0
+    chance: 50,
+    severity: 0,
 },{
-    minChance: 50,
-    maxChance: 79,
-    severity: 1
+    chance: 80,
+    severity: 1,
 },{
-    minChance: 80,
-    maxChance: 89,
-    severity: 2
+    chance: 90,
+    severity: 2,
 },{
-    minChance: 90,
-    maxChance: 94,
-    severity: 3
+    chance: 95,
+    severity: 3,
 },{
-    minChance: 95,
-    maxChance: 99,
-    severity: 4
+    chance: 100,
+    severity: 4,
 }];
 
 const WINDDESC = [
@@ -135,17 +122,9 @@ function findDesc (element) {
     return table[desc];
 }
 
-function rollChance(table) {
-    let diceRoll = rollD100();
-    for (let i=0;i<table.length;i++){
-        if (diceRoll >= table[i].minChance && diceRoll <= table[i].maxChance) {
-            return table[i].severity;
-        }
-    }
-}
-
-function rollD100() {
-    return Math.floor(Math.random() * 100);
+const rollChance = table => {
+    const elem = rnd.randInt(1, 100)
+    return table.find(x => elem <= x)
 }
 
 //Forecast functions.

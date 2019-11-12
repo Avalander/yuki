@@ -14,7 +14,6 @@ module.exports = [
 	require('./roll'),
 	require('./weather'),
 	require('./welcome'),
-	require('./wildMagic'),
 	persist.save,
 	persist.recall,
 	persist.forget,
