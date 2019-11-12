@@ -12,6 +12,12 @@ const evalFirst = first => {
 	throw new Error(`Expected function, string or regexp, but found ${typeof first}`)
 }
 
+module.exports.evalTextStart = (callback, ...expect) => (text, message, options, next) =>
+	(expect.some(x => text.toLowerCase().startsWith(x))
+		? callback(text.toLowerCase(), message, options)
+		: next()
+	)
+
 module.exports.textEquals = (...expect) => (text, message, options, next) =>
 	(expect.includes(text)
 		? next()
@@ -36,7 +42,13 @@ module.exports.authorIsAdmin = (text, message, { settings }, next) =>
 		: message.channel.send('Request denied.')
 	)
 
-module.exports.checkRole = (author_id, roles) => {
-	return roles.filter(({ name }) => [ 'GM', 'Game Master', 'Narrator' ].includes(name))
-		.some(({ members }) => members.has(author_id))
+module.exports.getClearance = (message, func) =>
+	(checkRole
+		? func()
+		: 'You do not have clearance to perform that action.'
+	)
+
+const checkRole = (message) => {
+	return message.guild.roles.filter(({ name }) => [ 'GM', 'Game Master', 'Narrator' ].includes(name))
+		.some(({ members }) => members.has(message.author.id))
 }

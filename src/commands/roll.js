@@ -1,4 +1,4 @@
-const { checkRole, makePipe, textContains } = require('./util')
+const { getClearance, makePipe, textContains } = require('./util')
 const { randInt } = require('../randtools')
 
 module.exports = makePipe(
@@ -68,12 +68,21 @@ const fudgify = num => {
 
 const getRollExps = text => text.toLowerCase().replace(regEx.tEfs, "").replace(regEx.tNoRoll, "").replace(regEx.tTrimmer, "").trim()
 
-const setDefaultRoll = (text, msg, memory) => {
-    if(!checkRole(msg.author.id, msg.guild.roles)) return "Sorry, you don't have permission to do that."
+const setDefaultRoll = (text, message, memory) => getClearance(message, () => {
     const str = getRollExps(text).trim()
     if (str === "") return "Invalid expression"
     else {
         memory.set('defaultRoll', str)
         return `I've set default roll to ${memory.get('defaultRoll')}.`
     }
-}
+})
+
+/*const setDefaultRoll = (text, msg, memory) => {
+    if(!checkRole(msg)) return "Sorry, you don't have permission to do that."
+    const str = getRollExps(text).trim()
+    if (str === "") return "Invalid expression"
+    else {
+        memory.set('defaultRoll', str)
+        return `I've set default roll to ${memory.get('defaultRoll')}.`
+    }
+}*/
