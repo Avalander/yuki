@@ -24,8 +24,8 @@ test('randInt() returns an integer within a random range', t => {
 //Random element in array
 test('randElem() returns an element within the array', t => {
     const array = [ "Twilight Sparkle", "Rarity", "Rainbow Dash", "Fluttershy", "Pinkie Pie", "Applejack"]
-    t.plan(10)
-    for (let i = 0; i < 10; i++) {
+    t.plan(100)
+    for (let i = 0; i < 100; i++) {
         const pony = rnd.randElem(array)
         t.assert(array.includes(pony), `Expect ${pony} to be in the array`)
     }
