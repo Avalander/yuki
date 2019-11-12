@@ -23,7 +23,7 @@ test('memory.get returns different objects for different keys', t => {
 
 test('memory.get retrieves falsey values', t => {
 	t.plan(1)
-	const memory = makeMemory()
+	const memory = makeMemory().get('1')
 	const value = 0
 	memory.set('test', value)
 	const retrieved = memory.get('test')
