@@ -35,7 +35,8 @@ module.exports.forget = makePipe(
         return store.remove(key)
             .then(() => message.channel.send(`Memory of ${key} has been erased.`))
             .catch(error => {
-                message.channel.send(`Something went wrong. ${error}`)
+                console.error(error)
+                return message.channel.send(`I could not delete the specified data.`)
             })
     }
 )
