@@ -21,6 +21,15 @@ test('memory.get returns different objects for different keys', t => {
 	t.notSame(first, second)
 })
 
+test('memory.get retrieves falsey values', t => {
+	t.plan(1)
+	const memory = makeMemory()
+	const value = 0
+	memory.set('test', value)
+	const retrieved = memory.get('test')
+	t.same(value, retrieved)
+})
+
 
 // ChannelMemory
 
