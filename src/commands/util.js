@@ -42,9 +42,9 @@ module.exports.authorIsAdmin = (text, message, { settings }, next) =>
 		: message.channel.send('Request denied.')
 	)
 
-module.exports.getClearance = (message, func) =>
+module.exports.checkClearance = (message, next) =>
 	(checkRole
-		? func()
+		? next()
 		: 'You do not have clearance to perform that action.'
 	)
 

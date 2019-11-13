@@ -1,4 +1,4 @@
-const { evalTextStart, getClearance, makePipe } = require('./util')
+const { checkClearance, evalTextStart, makePipe } = require('./util')
 const rnd = require('../randtools')
 
 module.exports = makePipe(
@@ -113,15 +113,15 @@ const WINDTABLE = [{
     severity: 4,
 }]
 
+//Utility functions.
 const regEx = {
     firstLetter: /^\w/,
     number: /-?[1-5]/,
     seasons: /spring|winter|summer|autumn/,
 }
 
-//Utility functions.
-const doChecks = (message, memory, func) => getClearance(message, () => checkSeason(memory)
-    ? func()
+const doChecks = (message, memory, next) => checkClearance(message, () => checkSeason(memory)
+    ? next()
     : 'You need to set a season first.'
 )
 
@@ -205,10 +205,10 @@ const checkSeason = memory => {
 }
 
 const newSeason = (message, memory) =>
-    getClearance(message, () => setSeason(rnd.randElem(SEASONS).name, message, memory))
+    checkClearance(message, () => setSeason(rnd.randElem(SEASONS).name, message, memory))
 
 const setSeason = (text, message, memory) =>
-    getClearance(message, () => {
+    checkClearance(message, () => {
         const newSeason = text.match(regEx.seasons)
         if (newSeason == null) return 'Sorry, I have no data about that season.'
         memory.set('season', SEASONS.find(x => x.name == newSeason[0]))

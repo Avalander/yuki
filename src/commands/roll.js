@@ -1,4 +1,4 @@
-const { getClearance, makePipe, textContains } = require('./util')
+const { checkClearance, makePipe, textContains } = require('./util')
 const { randInt } = require('../randtools')
 
 module.exports = makePipe(
@@ -68,7 +68,7 @@ const fudgify = num => {
 
 const getRollExps = text => text.toLowerCase().replace(regEx.tEfs, "").replace(regEx.tNoRoll, "").replace(regEx.tTrimmer, "").trim()
 
-const setDefaultRoll = (text, message, memory) => getClearance(message, () => {
+const setDefaultRoll = (text, message, memory) => checkClearance(message, () => {
     const str = getRollExps(text).trim()
     if (str === "") return "Invalid expression"
     else {
