@@ -12,12 +12,6 @@ const evalFirst = first => {
 	throw new Error(`Expected function, string or regexp, but found ${typeof first}`)
 }
 
-module.exports.evalTextStart = (callback, ...expect) => (text, message, options, next) =>
-	(expect.some(x => text.toLowerCase().startsWith(x))
-		? callback(text.toLowerCase(), message, options)
-		: next()
-	)
-
 module.exports.textEquals = (...expect) => (text, message, options, next) =>
 	(expect.includes(text)
 		? next()

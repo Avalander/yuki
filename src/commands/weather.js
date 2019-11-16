@@ -1,22 +1,64 @@
-const { checkClearance, evalTextStart, makePipe } = require('./util')
+const { checkClearance, makePipe, textContains } = require('./util')
 const rnd = require('../randtools')
 
-module.exports = makePipe(
-    evalTextStart((text, message, { memory }) => message.channel.send(checkPrecipitation(memory)), 'check precipitation', 'check rain'),
-    evalTextStart((text, message, { memory }) => message.channel.send(newPrecipitation(message, memory)), 'new precipitation', 'new rain'),
-    evalTextStart((text, message, { memory }) => message.channel.send(setPrecipitation(text, message, memory)), 'set precipitation', 'set rain'),
-    evalTextStart((text, message, { memory }) => message.channel.send(checkSeason(memory)), 'check season'),
-    evalTextStart((text, message, { memory }) => message.channel.send(newSeason(message, memory)), 'new season'),
-    evalTextStart((text, message, { memory }) => message.channel.send(setSeason(text, message, memory)), 'set season'),
-    evalTextStart((text, message, { memory }) => message.channel.send(checkTemperature(memory)), 'check temperature'),
-    evalTextStart((text, message, { memory }) => message.channel.send(newTemperature(message, memory)), 'new temperature'),
-    evalTextStart((text, message, { memory }) => message.channel.send(setTemperature(text, message, memory)), 'set temperature'),
-    evalTextStart((text, message, { memory }) => message.channel.send(checkWeather(memory)), 'check weather'),
-    evalTextStart((text, message, { memory }) => message.channel.send(newWeather(message, memory)), 'new weather'),
-    evalTextStart((text, message, { memory }) => message.channel.send(checkWind(memory)), 'check wind'),
-    evalTextStart((text, message, { memory }) => message.channel.send(newWind(message, memory)), 'new wind'),
-    evalTextStart((text, message, { memory }) => message.channel.send(setWind(text, message, memory)), 'set wind')
-)
+module.exports = [
+    makePipe(
+        textContains('check precipitation', 'check rain', 'how rainy'),
+        (text, message, { memory }) => message.channel.send(checkPrecipitation(memory))
+    ),
+    makePipe(
+        textContains('new precipitation', 'new rain'),
+        (text, message, { memory }) => message.channel.send(newPrecipitation(message, memory))
+    ),
+    makePipe(
+        textContains('set precipitation', 'set rain'),
+        (text, message, { memory }) => message.channel.send(setPrecipitation(text, message, memory))
+    ),
+    makePipe(
+        textContains('check season'),
+        (text, message, { memory }) => message.channel.send(checkSeason(memory))
+    ),
+    makePipe(
+        textContains('new season'),
+        (text, message, { memory }) => message.channel.send(newSeason(message, memory))
+    ),
+    makePipe(
+        textContains('set season'),
+        (text, message, { memory }) => message.channel.send(setSeason(text, message, memory))
+    ),
+    makePipe(
+        textContains('check temperature', 'check temp', 'how cold', 'how hot'),
+        (text, message, { memory }) => message.channel.send(checkTemperature(memory))
+    ),
+    makePipe(
+        textContains('new temperature', 'new temp'),
+        (text, message, { memory }) => message.channel.send(newTemperature(message, memory))
+    ),
+    makePipe(
+        textContains('set temperature', 'set temp'),
+        (text, message, { memory }) => message.channel.send(setTemperature(text, message, memory))
+    ),
+    makePipe(
+        textContains('check weather', 'check forecast', 'how is the weather', 'what is the weather'),
+        (text, message, { memory }) => message.channel.send(checkWeather(memory))
+    ),
+    makePipe(
+        textContains('new weather', 'new forecast'),
+        (text, message, { memory }) => message.channel.send(newWeather(message, memory))
+    ),
+    makePipe(
+        textContains('check wind', 'how windy'),
+        (text, message, { memory }) => message.channel.send(checkWind(memory))
+    ),
+    makePipe(
+        textContains('new wind'),
+        (text, message, { memory }) => message.channel.send(newWind(message, memory))
+    ),
+    makePipe(
+        textContains('set wind'),
+        (text, message, { memory }) => message.channel.send(setWind(text, message, memory))
+    ),
+]
 
 //Data
 const SEASONS = [{
