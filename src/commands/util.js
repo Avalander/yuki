@@ -36,7 +36,13 @@ module.exports.authorIsAdmin = (text, message, { settings }, next) =>
 		: message.channel.send('Request denied.')
 	)
 
-module.exports.checkRole = (author_id, roles) => {
-	return roles.filter(({ name }) => [ 'GM', 'Game Master', 'Narrator' ].includes(name))
-		.some(({ members }) => members.has(author_id))
+module.exports.checkClearance = (message, next) =>
+	(checkRole
+		? next()
+		: 'You do not have clearance to perform that action.'
+	)
+
+const checkRole = (message) => {
+	return message.guild.roles.filter(({ name }) => [ 'GM', 'Game Master', 'Narrator' ].includes(name))
+		.some(({ members }) => members.has(message.author.id))
 }

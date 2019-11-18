@@ -12,7 +12,7 @@ module.exports = [
 	remember.recall,
 	remember.forget,
 	require('./roll'),
-	require('./weather'),
+	...require('./weather'),
 	require('./welcome'),
 	persist.save,
 	persist.recall,
