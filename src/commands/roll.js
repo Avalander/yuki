@@ -1,13 +1,14 @@
 const { checkClearance, makePipe, textContains } = require('./util')
 const { randInt } = require('../randtools')
 
-module.exports = makePipe(
-    textContains("roll"),
-    (text, message, { memory }) => 
-        text.includes("set default roll") 
-            ? message.channel.send(setDefaultRoll(text, message, memory))
-            : message.channel.send(parseRolls(text, memory))
-)
+module.exports =
+    makePipe(
+        textContains("roll"),
+        (text, message, { memory }) => 
+            text.includes("set default roll") 
+                ? message.channel.send(setDefaultRoll(text, message, memory))
+                : message.channel.send(parseRolls(text, memory))
+    )
 
 const regEx = {
     gModifier: /[+-]\d+(?!d(?:\d+|f))/g,
@@ -76,3 +77,10 @@ const setDefaultRoll = (text, message, memory) => checkClearance(message, () => 
         return `I've set default roll to ${memory.get('defaultRoll')}.`
     }
 })
+
+const getHelp = () => `This is the functionality of the module \`roll\`:\n${descriptions.map(x => `\`${x[0]}\`: ${x[1]}\n`)}`
+
+const descriptions = [
+    [ "roll", "With this command, I will simulate a dice roll and return a result based on your expression.\nWrite [number]d[number] (v.gr. 2d6) and I will roll the appropriate die. You can also add as many modifiers (either static numbers or rolls) by appending a + or a - in front of them (v.gr. 2d6+3-1d4). You can also chain more than one roll (v.gr. 2d6+3, 2d6+5, 2d6-1d4)." ],
+    [ "set default roll", "**Only for GMs**. With this command, I will store your roll expression and use it when someone does not provide a valid roll expression with the command `roll`." ],
+]
