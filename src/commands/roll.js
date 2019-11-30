@@ -51,7 +51,7 @@ const parseRolls = (text, memory) => {
     return exps.length >= 1
         ? formatResult(exps)
         : Object.entries(memory.get('defaultRoll')).length > 0
-        ? parseRolls(`roll ${memory.get('defaultRoll')}`, memory)
+        ? formatResult(memory.get('defaultRoll'))
         : 'Invalid expression'
 }
 
@@ -78,11 +78,11 @@ const fudgify = num => {
 const getRollExps = text => text.toLowerCase().split(regEx.tSplitter).slice(1).map(x => extractExpression(x))
     
 const setDefaultRoll = (text, message, memory) => checkClearance(message, () => {
-    const expression = getRollExps(text).join(', ')
+    const expression = getRollExps(text)
     if (expression === '') return "Invalid expression"
     else {
         memory.set('defaultRoll', expression)
-        return `I've set default roll to ${memory.get('defaultRoll')}.`
+        return `I've set default roll to ${memory.get('defaultRoll').join(', ')}.`
     }
 })
 
