@@ -3,9 +3,9 @@ const { randInt } = require('../randtools')
 
 module.exports =
     makePipe(
-        textContains("roll"),
+        textContains('roll'),
         (text, message, { memory }) => 
-            text.includes("set default roll") 
+            text.includes('set default roll')
                 ? message.channel.send(setDefaultRoll(text, message, memory))
                 : message.channel.send(parseRolls(text, memory))
     )
@@ -26,11 +26,11 @@ const roller = (dice, start, end) => Array(parseInt(dice)).fill(1).reduce((a) =>
 const reduceRolls = (a, b) => {
     const exp = b.match(regEx.roll)
 
-    const isFudge = exp[2] == "f" ? true : false
+    const isFudge = exp[2] == 'f' ? true : false
     const roll = isFudge ? roller(exp[1], -1, 1) : roller(exp[1], 1, exp[2])
     const rollArr = isFudge ? a.list.concat([roll.list.map(x => fudgify(x))]) : a.list.concat([roll.list])
 
-    return exp[0].startsWith("+") 
+    return exp[0].startsWith('+') 
         ? { result: a.result + roll.result, list: rollArr }
         : { result: a.result - roll.result, list: rollArr }
 }
@@ -44,7 +44,7 @@ const addModifiers = (text, regEx, reducer, initVal) => {
 
 const addNumbers = text => addModifiers(text, regEx.gModifier, reduceNumber, 0)
 
-const addRolls = text => addModifiers(text, regEx.gRoll, reduceRolls, { result: 0, list: [] })
+const executeRolls = text => addModifiers(text, regEx.gRoll, reduceRolls, { result: 0, list: [] })
 
 const parseRolls = (text, memory) => {
     const exps = getRollExps(text)
@@ -62,13 +62,13 @@ const extractExpression = text => {
 }
 
 const formatExpression = expression => {
-    const rolls = addRolls(`+${expression}`)
+    const rolls = executeRolls(`+${expression}`)
     return `**${rolls.result + addNumbers(expression)}** (${rolls.list.join('),(')}) [_${expression}_]`
 }
 
 const formatResult = expressions => expressions
     .map(formatExpression)
-    .reduce((a, b) => `${a}\n${b}`, "There you go:")
+    .reduce((a, b) => `${a}\n${b}`, 'There you go:')
 
 const fudgify = num => {
     const map = { "-1": "-", "0": " ", "1": "+" }
@@ -79,7 +79,7 @@ const getRollExps = text => text.toLowerCase().split(regEx.tSplitter).slice(1).m
     
 const setDefaultRoll = (text, message, memory) => checkClearance(message, () => {
     const expression = getRollExps(text).join(', ')
-    if (expression === "") return "Invalid expression"
+    if (expression === '') return "Invalid expression"
     else {
         memory.set('defaultRoll', expression)
         return `I've set default roll to ${memory.get('defaultRoll')}.`
