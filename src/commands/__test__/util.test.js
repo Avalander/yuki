@@ -138,7 +138,37 @@ test('checkClearance should invoke next author role is GM or similar', t => {
 	t.plan(3)
 	const message = {
 		guild: {
-			roles: [ 'GM', 'Other role' ],
-		}
+			roles: [{ 
+				name: 'GM',
+				members: new Set([ 1, 2 ]),
+			}, { 
+				name: 'Game Master',
+				members: new Set([ 3 ]),
+			}, { 
+				name: 'Narrator',
+				members: new Set([ 4 ]),
+			}],
+		},
+		author: { id: 1 },
 	}
+	checkClearance(message, t.pass)
+	message.author.id = 3
+	checkClearance(message, t.pass)
+	message.author.id = 4
+	checkClearance(message, t.pass)
+})
+
+test('checkClearance should deny request when author is not GM or similar', t => {
+	t.plan(1)
+	const message = {
+		guild: {
+			roles: [{ 
+				name: 'GM',
+				members: new Set([ 1, 2 ]),
+			}],
+		},
+		author: { id: 'potato' },
+	}
+	const result = checkClearance(message, t.fail)
+	t.equal(result, 'You do not have clearance to perform that action.')
 })

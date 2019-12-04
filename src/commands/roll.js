@@ -5,7 +5,7 @@ module.exports =
     makePipe(
         textContains('roll'),
         (text, message, { memory }) =>
-            text.includes('--help')
+            console.log(message.guild.roles) || text.includes('--help')
                 ? message.channel.send(getHelp())
                 : text.includes('set default roll')
                 ? message.channel.send(setDefaultRoll(text, message, memory))
