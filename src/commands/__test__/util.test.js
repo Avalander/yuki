@@ -167,7 +167,7 @@ test('checkClearance should deny request when author is not GM or similar', t =>
 				members: new Set([ 1, 2 ]),
 			}],
 		},
-		author: { id: 'potato' },
+		author: { id: 3 },
 	}
 	const result = checkClearance(message, t.fail)
 	t.equal(result, 'You do not have clearance to perform that action.')
