@@ -1,6 +1,50 @@
 const test = require('tape')
 
-const { textEquals, textContains, textMatches, authorIsAdmin } = require('../util')
+const { makePipe, textEquals, textContains, textMatches, authorIsAdmin, checkClearance } = require('../util')
+
+//makePipe
+test('makePipe should use textEquals when first argument is a string', t => {
+	t.plan(1)
+	makePipe('potato', t.pass) ('potato')
+})
+
+test('makePipe should not invoke next function when string doesn\'t equal the text', t => {
+	t.plan(1)
+	const result = makePipe('potato', t.fail) ('cabbage')
+	t.false(result)
+})
+
+test('makePipe should use textMatches when first argument is a regular expression', t => {
+	t.plan(1)
+	makePipe(/roll \d+d\d+/, t.pass) ('roll 2d6')
+})
+
+test('makePipe should not invoke next function when text doesn\'t match regular expression', t => {
+	t.plan(1)
+	const result = makePipe(/roll \d+d\d+/, t.fail) ('roll potatoes')
+	t.false(result)
+})
+
+test('makePipe invokes first function', t => {
+	t.plan(1)
+	makePipe(t.pass) ()
+})
+
+test('makePipe stops when one function returns false', t => {
+	t.plan(1)
+	const result = makePipe((t, m, o, next) => next(), (t, m, o, next) => next(), () => false, t.fail) ()
+	t.false(result)
+})
+
+test('makePipe executes all functions if none returns false', t => {
+	t.plan(1)
+	makePipe((t, m, o, next) => next(), (t, m, o, next) => next(), (t, m, o, next) => next(), (t, m, o, next) => next(), t.pass) ()
+})
+
+test('makePipe throws error if first argument is not string, regex or function', t => {
+	t.plan(1)
+	t.throws(makePipe(12, t.fail))
+})
 
 
 // textEquals
@@ -56,7 +100,7 @@ test('textMatches should invoke next when text matches regex', t => {
 
 test('textMatches should return false when text does not match regex', t => {
 	t.plan(1)
-	const result = textMatches(/roll \dd\d+/) ('roll 3e8', null, null, () => fail())
+	const result = textMatches(/roll \dd\d+/) ('roll 3e8', null, null, () => t.fail())
 	t.false(result)
 })
 
@@ -86,4 +130,45 @@ test('authorIsAdmin should deny request when author is not admin', t => {
 		admins: [ 1 ]
 	}
 	authorIsAdmin('ponies', message, { settings }, () => t.fail())
+})
+
+//checkClearance
+
+test('checkClearance should invoke next author role is GM or similar', t => {
+	t.plan(3)
+	const message = {
+		guild: {
+			roles: [{ 
+				name: 'GM',
+				members: new Set([ 1, 2 ]),
+			}, { 
+				name: 'Game Master',
+				members: new Set([ 3 ]),
+			}, { 
+				name: 'Narrator',
+				members: new Set([ 4 ]),
+			}],
+		},
+		author: { id: 1 },
+	}
+	checkClearance(message, t.pass)
+	message.author.id = 3
+	checkClearance(message, t.pass)
+	message.author.id = 4
+	checkClearance(message, t.pass)
+})
+
+test('checkClearance should deny request when author is not GM or similar', t => {
+	t.plan(1)
+	const message = {
+		guild: {
+			roles: [{ 
+				name: 'GM',
+				members: new Set([ 1, 2 ]),
+			}],
+		},
+		author: { id: 3 },
+	}
+	const result = checkClearance(message, t.fail)
+	t.equal(result, 'You do not have clearance to perform that action.')
 })

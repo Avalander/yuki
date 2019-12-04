@@ -37,7 +37,7 @@ module.exports.authorIsAdmin = (text, message, { settings }, next) =>
 	)
 
 module.exports.checkClearance = (message, next) =>
-	(checkRole
+	(checkRole(message)
 		? next()
 		: 'You do not have clearance to perform that action.'
 	)
