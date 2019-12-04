@@ -5,40 +5,40 @@ const { makePipe, textEquals, textContains, textMatches, authorIsAdmin, checkCle
 //makePipe
 test('makePipe should use textEquals when first argument is a string', t => {
 	t.plan(1)
-	makePipe('potato', t.pass) ('potato', null, null)
+	makePipe('potato', t.pass) ('potato')
 })
 
 test('makePipe should not invoke next function when string doesn\'t equal the text', t => {
 	t.plan(1)
-	const result = makePipe('potato', t.fail) ('cabbage', null, null)
+	const result = makePipe('potato', t.fail) ('cabbage')
 	t.false(result)
 })
 
 test('makePipe should use textMatches when first argument is a regular expression', t => {
 	t.plan(1)
-	makePipe(/roll \d+d\d+/, t.pass) ('roll 2d6', null, null)
+	makePipe(/roll \d+d\d+/, t.pass) ('roll 2d6')
 })
 
 test('makePipe should not invoke next function when text doesn\'t match regular expression', t => {
 	t.plan(1)
-	const result = makePipe(/roll \d+d\d+/, t.fail) ('roll potatoes', null, null)
+	const result = makePipe(/roll \d+d\d+/, t.fail) ('roll potatoes')
 	t.false(result)
 })
 
 test('makePipe invokes first function', t => {
 	t.plan(1)
-	makePipe(t.pass) (null, null, null)
+	makePipe(t.pass) ()
 })
 
 test('makePipe stops when one function returns false', t => {
 	t.plan(1)
-	const result = makePipe((t, m, o, next) => next(), (t, m, o, next) => next(), () => false, t.fail) (null, null, null)
+	const result = makePipe((t, m, o, next) => next(), (t, m, o, next) => next(), () => false, t.fail) ()
 	t.false(result)
 })
 
 test('makePipe executes all functions if none returns false', t => {
 	t.plan(1)
-	makePipe((t, m, o, next) => next(), (t, m, o, next) => next(), (t, m, o, next) => next(), (t, m, o, next) => next(), t.pass) (null, null, null)
+	makePipe((t, m, o, next) => next(), (t, m, o, next) => next(), (t, m, o, next) => next(), (t, m, o, next) => next(), t.pass) ()
 })
 
 test('makePipe throws error if first argument is not string, regex or function', t => {
