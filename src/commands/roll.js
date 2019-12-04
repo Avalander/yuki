@@ -54,7 +54,6 @@ const executeRolls = text => addModifiers(text, regEx.gRoll, reduceRolls, { resu
 
 const parseRolls = (text, memory) => {
     const exps = getRollExps(text)
-    console.log('Expressions:', exps)
     return exps.length >= 1
         ? formatResult(exps)
         : Object.entries(memory.get('defaultRoll')).length > 0
