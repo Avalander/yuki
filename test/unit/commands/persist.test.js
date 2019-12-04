@@ -6,8 +6,10 @@ const {
   forget,
 } = require('commands/persist')
 
-const { each } = require('helpers')
-const { runWith } = require('./helpers')
+const {
+  each,
+  runWith,
+} = require('helpers')
 
 
 // Mocks

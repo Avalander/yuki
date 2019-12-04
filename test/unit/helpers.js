@@ -10,3 +10,10 @@ const makeDescription = (text, args) => {
 		: [ args ]
 	return values.reduce((prev, v) => prev.replace('{}', v), text)
 }
+
+module.exports.runWith = (cmd, {
+	text,
+	message,
+	options,
+}) => (text_ = text, message_ = message, options_ = options) =>
+		cmd(text_, message_, options_)
