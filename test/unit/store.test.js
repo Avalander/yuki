@@ -1,5 +1,7 @@
 const tap = require('tap')
 
+const { each } = require('helpers')
+
 const { factory } = require('store')
 
 
@@ -45,52 +47,50 @@ tap.test('load', t => {
 
 // test save & append
 
-;([
+each(tap, [
 	[ 'save', { encoding: 'utf8' }],
 	[ 'append', { mode: 'a', encoding: 'utf8' }],
-]).forEach(([ fn, options ]) => {
-	tap.test(fn, t => {
-		t.test('fails with Invalid path when trying to access a file outside the channel folder', t => {
-			const store = factory({
-				mkdir: resolveWith,
-			})('data')('1')
+]) ('', (t, [ fn, options ]) => {
+	t.test('fails with Invalid path when trying to access a file outside the channel folder', t => {
+		const store = factory({
+			mkdir: resolveWith,
+		})('data')('1')
 
-			store[fn]('../2/pony', 'Twilight Sparkle')
-				.catch(err => {
-					t.equal(err.message, `Invalid path 'data/2/pony'`)
-					t.end()
-				})
-		})
+		store[fn]('../2/pony', 'Twilight Sparkle')
+			.catch(err => {
+				t.equal(err.message, `Invalid path 'data/2/pony'`)
+				t.end()
+			})
+	})
 
-		t.test('creates the directory for the channel', t => {
-			const store = factory({
-				mkdir: x => {
-					t.equal(x, 'data/1')
-					return Promise.resolve(x)
-				},
-				writeFile: noop,
-			})('data')('1')
+	t.test('creates the directory for the channel', t => {
+		const store = factory({
+			mkdir: x => {
+				t.equal(x, 'data/1')
+				return Promise.resolve(x)
+			},
+			writeFile: noop,
+		})('data')('1')
 
-			store[fn]('pony', 'Twilight Sparkle')
-				.then(() => t.end())
-		})
+		store[fn]('pony', 'Twilight Sparkle')
+			.then(() => t.end())
+	})
 
-		t.test('invokes writeFile with the given value', t => {
-			const store = factory({
-				mkdir: resolveWith,
-				writeFile: (key, data, options_) => {
-					t.equal(key, 'data/1/pony')
-					t.equal(data, 'Twilight Sparkle')
-					t.deepEqual(options_, options)
-				},
-			})('data')('1')
+	t.test('invokes writeFile with the given value', t => {
+		const store = factory({
+			mkdir: resolveWith,
+			writeFile: (key, data, options_) => {
+				t.equal(key, 'data/1/pony')
+				t.equal(data, 'Twilight Sparkle')
+				t.deepEqual(options_, options)
+			},
+		})('data')('1')
 
-			store[fn]('pony', 'Twilight Sparkle')
-				.then(() => t.end())
+		store[fn]('pony', 'Twilight Sparkle')
+			.then(() => t.end())
     })
     
     t.end()
-	})
 })
 
 

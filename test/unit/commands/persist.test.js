@@ -6,6 +6,7 @@ const {
   forget,
 } = require('commands/persist')
 
+const { each } = require('helpers')
 const { runWith } = require('./helpers')
 
 
@@ -27,31 +28,29 @@ const withStore = ({ save, load, remove }) => ({
 // test save
 
 tap.test('persist.save', t => {
-  ([
-    [ 'store pony: Twilight Sparkle', 'pony', 'Twilight Sparkle' ],
-    [ 'store pony : Twilight Sparkle', 'pony', 'Twilight Sparkle' ],
-    [ 'store pony:Twilight Sparkle', 'pony', 'Twilight Sparkle' ],
-    [ 'store pony :Twilight Sparkle', 'pony', 'Twilight Sparkle' ],
-    [ 'store ponies : [ "Twilight Sparkle", "Rainbow Dash" ]', 'ponies', '[ "Twilight Sparkle", "Rainbow Dash" ]' ],
-  ]).forEach(([ cmd, key, value ]) =>
-    t.test(`'${cmd}' invokes store.save with (${key}, ${value})`, t => {
-      const runSave = runWith(save, {
-        message: message(text => t.same(text, 'I will remember that.')),
-        options: withStore({
-          save: (k, v) => {
-            t.same(k, key)
-            t.same(v, value)
-            return Promise.resolve()
-          }
-        }),
-      })
-
-      return t.resolves(runSave(cmd))
-        .then(() => {
-          t.end()
-        })
+  each(t, [
+    ['store pony: Twilight Sparkle', 'pony', 'Twilight Sparkle'],
+    ['store pony : Twilight Sparkle', 'pony', 'Twilight Sparkle'],
+    ['store pony:Twilight Sparkle', 'pony', 'Twilight Sparkle'],
+    ['store pony :Twilight Sparkle', 'pony', 'Twilight Sparkle'],
+    ['store ponies : [ "Twilight Sparkle", "Rainbow Dash" ]', 'ponies', '[ "Twilight Sparkle", "Rainbow Dash" ]'],
+  ]) ('{} invokes store.save with ({}, {})', (t, [ cmd, key, value ]) => {
+    const runSave = runWith(save, {
+      message: message(text => t.same(text, 'I will remember that.', 'Message is sent to channel')),
+      options: withStore({
+        save: (k, v) => {
+          t.same(k, key, `Is saved with key '${k}'`)
+          t.same(v, value, `Is saved with value '${v}'`)
+          return Promise.resolve()
+        }
+      }),
     })
-  )
+
+    return t.resolves(runSave(cmd))
+      .then(() => {
+        t.end()
+      })
+  })
 
   t.test('save logs errors to the console when store.save fails', t => {
     const runSave = runWith(save, {
@@ -91,24 +90,22 @@ tap.test('persist.recall', t => {
       })
   })
 
-  ;([
+  each(t, [
     [ 'rejects', Promise.reject('ಠ_ಠ') ],
     [ 'resolves with null value', Promise.resolve(null) ],
     [ 'resolves with undefined value', Promise.resolve(undefined) ],
-  ]).forEach(([ s, loadResult ]) => {
-    t.test(`sends error when store.load ${s}`, t => {
-      const runRecall = runWith(recall, {
-        message: message(text => t.same(text, 'I have no recollection of that.')),
-        options: withStore({
-          load: () => loadResult,
-        }),
-      })
-
-      return t.resolves(runRecall('read pony'))
-        .then(() => {
-          t.end()
-        })
+  ]) ('sends error when store.load {}', (t, [ _, loadResult ]) => {
+    const runRecall = runWith(recall, {
+      message: message(text => t.same(text, 'I have no recollection of that.')),
+      options: withStore({
+        load: () => loadResult,
+      }),
     })
+
+    return t.resolves(runRecall('read pony'))
+      .then(() => {
+        t.end()
+      })
   })
 
   t.end()
