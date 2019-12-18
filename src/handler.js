@@ -17,7 +17,7 @@ const canHandle = (message, client) =>
 	!isBot(message, client.user.id) && isSentToYuki(message, client.user)
 
 const handle = (commands, memory, settings, store) => (message, client) => {
-	const text = message.content.replace(`<@${client.user.id}>`, '').trim()
+	const text = message.content.replace(`<@!${client.user.id}>`, '').trim()
 	const options = {
 		client,
 		settings,
