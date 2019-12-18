@@ -12,6 +12,7 @@
     "bot:restart": "./scripts/main.sh restart",
     "test": "tape 'src/**/*.test.js' | tap-dot",
     "test:coverage": "nyc npm run test",
+    "test:unit": "NODE_PATH=src:test/unit tap --reporter=specy 'test/unit/**/*.test.js'",
     "lint": "eslint src/**/*.js"
   },
   "keywords": [],
@@ -24,6 +25,7 @@
     "eslint": "^6.6.0",
     "nodemon": "^1.19.4",
     "nyc": "^14.1.1",
+    "tap": "^14.9.2",
     "tap-diff": "^0.1.1",
     "tap-dot": "^2.0.0",
     "tape": "^4.9.1"
