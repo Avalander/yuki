@@ -2,7 +2,7 @@ const tap = require('tap')
 
 const {
   authorIsAdmin,
-  checkRole,
+  checkClearance,
   textContains,
   textEquals,
   textMatches,
@@ -105,6 +105,38 @@ tap.test('authorIsAdmin', t => {
 			admins: [ 1 ]
 		}
 		authorIsAdmin('ponies', message, { settings }, () => t.fail())
+		t.end()
+	})
+
+	t.end()
+})
+
+// checkClearance
+
+tap.test('checkClearance', t => {
+	t.test('should invoke next when author is GM or similar', t => {
+		const message = {
+			guild: {
+				roles: [{ 
+					name: 'GM',
+					members: new Set([ 1, 2 ]),
+				}, { 
+					name: 'Game Master',
+					members: new Set([ 3 ]),
+				}, { 
+					name: 'Narrator',
+					members: new Set([ 4 ]),
+				}],
+			},
+			author: { id: 2 },
+		}
+
+		checkClearance(message, t.pass)
+		message.author.id = 3
+		checkClearance(message, t.pass)
+		message.author.id = 4
+		checkClearance(message, t.pass)
+
 		t.end()
 	})
 
