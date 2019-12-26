@@ -71,7 +71,7 @@ tap.test('textMatches', t => {
 	})
 
 	t.test('should return false when text does not match regex', t => {
-		const result = textMatches(/roll \dd\d+/) ('roll 3e8', null, null, () => fail())
+		const result = textMatches(/roll \dd\d+/) ('roll 3e8', null, null, () => t.fail())
 		t.false(result)
 		t.end()
 	})
