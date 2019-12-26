@@ -140,5 +140,19 @@ tap.test('checkClearance', t => {
 		t.end()
 	})
 
+	t.test('should deny request when author is not GM or similar', t => {
+		const message = {
+			guild: {
+				roles: [{ 
+					name: 'GM',
+					members: new Set([ 1, 2 ]),
+				}],
+			},
+			author: { id: 3 },
+		}
+		const result = checkClearance(message, t.fail)
+		t.equal(result, 'You do not have clearance to perform that action.')
+	})
+
 	t.end()
 })
