@@ -131,11 +131,11 @@ tap.test('checkClearance', t => {
 			author: { id: 2 },
 		}
 
-		checkClearance(message, t.pass)
+		checkClearance(message, () => t.pass('Invokes next'))
 		message.author.id = 3
-		checkClearance(message, t.pass)
+		checkClearance(message, () => t.pass('Invokes next'))
 		message.author.id = 4
-		checkClearance(message, t.pass)
+		checkClearance(message, () => t.pass('Invokes next'))
 		t.end()
 	})
 
