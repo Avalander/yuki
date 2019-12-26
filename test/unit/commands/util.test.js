@@ -3,6 +3,7 @@ const tap = require('tap')
 const {
   authorIsAdmin,
   checkClearance,
+  makePipe,
   textContains,
   textEquals,
   textMatches,
@@ -151,6 +152,48 @@ tap.test('checkClearance', t => {
 		}
 		const result = checkClearance(message, t.fail)
 		t.equal(result, 'You do not have clearance to perform that action.')
+		t.end()
+	})
+
+	t.end()
+})
+
+// makePipe
+
+tap.test('makePipe', t => {
+	t.test('should use textEquals when first arg is a string', t => {
+		makePipe('potato', () => t.pass('Invokes next')) ('potato')
+		const result = makePipe('potato', t.fail) ('cabbage')
+		t.false(result)
+		t.end()
+	})
+
+	t.test('should use textMatches when first arg is a regular expression', t => {
+		makePipe(/roll \d+d\d+/, () => t.pass('Invokes next')) ('roll 2d6')
+		const result = makePipe(/roll \d+d\d+/, t.fail) ('roll potatoes')
+		t.false(result)
+		t.end()
+	})
+
+	t.test('should invoke all functions if none returns false', t => {
+		makePipe(() => t.pass('Invokes first')) ()
+		makePipe(
+			(t, m, o, next) => next(),
+			(t, m, o, next) => next(),
+			(t, m, o, next) => next(),
+			() => t.pass('Invokes last')
+		) ()
+		t.end()
+	})
+
+	t.test('should stop when a function returns false', t => {
+		const result = makePipe((t, m, o, next) => next(), (t, m, o, next) => next(), () => false, t.fail) ()
+		t.false(result)
+		t.end()
+	})
+
+	t.test('should throw error if first argument is not string, regEx or function', t => {
+		t.throws(makePipe(12, t.fail))
 		t.end()
 	})
 
