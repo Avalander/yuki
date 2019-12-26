@@ -136,7 +136,6 @@ tap.test('checkClearance', t => {
 		checkClearance(message, t.pass)
 		message.author.id = 4
 		checkClearance(message, t.pass)
-
 		t.end()
 	})
 
@@ -152,6 +151,7 @@ tap.test('checkClearance', t => {
 		}
 		const result = checkClearance(message, t.fail)
 		t.equal(result, 'You do not have clearance to perform that action.')
+		t.end()
 	})
 
 	t.end()
