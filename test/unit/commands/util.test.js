@@ -2,7 +2,8 @@ const tap = require('tap')
 
 const {
   authorIsAdmin,
-  checkRole,
+  checkClearance,
+  makePipe,
   textContains,
   textEquals,
   textMatches,
@@ -71,7 +72,7 @@ tap.test('textMatches', t => {
 	})
 
 	t.test('should return false when text does not match regex', t => {
-		const result = textMatches(/roll \dd\d+/) ('roll 3e8', null, null, () => fail())
+		const result = textMatches(/roll \dd\d+/) ('roll 3e8', null, null, () => t.fail())
 		t.false(result)
 		t.end()
 	})
@@ -105,6 +106,102 @@ tap.test('authorIsAdmin', t => {
 			admins: [ 1 ]
 		}
 		authorIsAdmin('ponies', message, { settings }, () => t.fail())
+		t.end()
+	})
+
+	t.end()
+})
+
+// checkClearance
+
+tap.test('checkClearance', t => {
+	t.test('should invoke next when author is GM or similar', t => {
+		const message = {
+			guild: {
+				roles: [{ 
+					name: 'GM',
+					members: new Set([ 1, 2 ]),
+				}, { 
+					name: 'Game Master',
+					members: new Set([ 3 ]),
+				}, { 
+					name: 'Narrator',
+					members: new Set([ 4 ]),
+				}],
+			},
+			author: { id: 2 },
+		}
+
+		checkClearance(message, () => t.pass('Invokes next'))
+		message.author.id = 3
+		checkClearance(message, () => t.pass('Invokes next'))
+		message.author.id = 4
+		checkClearance(message, () => t.pass('Invokes next'))
+		t.end()
+	})
+
+	t.test('should deny request when author is not GM or similar', t => {
+		const message = {
+			guild: {
+				roles: [{ 
+					name: 'GM',
+					members: new Set([ 1, 2 ]),
+				}],
+			},
+			author: { id: 3 },
+		}
+		const result = checkClearance(message, t.fail)
+		t.equal(result, 'You do not have clearance to perform that action.')
+		t.end()
+	})
+
+	t.end()
+})
+
+// makePipe
+
+tap.test('makePipe', t => {
+	t.test('should use textEquals when first arg is a string', t => {
+		makePipe('potato', () => t.pass('Invokes next')) ('potato')
+		const result = makePipe('potato', t.fail) ('cabbage')
+		t.false(result)
+		t.end()
+	})
+
+	t.test('should use textMatches when first arg is a regular expression', t => {
+		makePipe(/roll \d+d\d+/, () => t.pass('Invokes next')) ('roll 2d6')
+		const result = makePipe(/roll \d+d\d+/, t.fail) ('roll potatoes')
+		t.false(result)
+		t.end()
+	})
+
+	t.test('should move on to next function if it invokes next()', t => {
+		makePipe(
+			(tx, m, o, next) => {
+				t.pass('Invokes first')
+				next()
+			},
+			(tx, m, o, next) => {
+				t.pass('Invokes second')
+				next()
+			},
+			(tx, m, o, next) => {
+				t.pass('Invokes third')
+				next()
+			},
+			() => t.pass('Invokes last')
+		) ()
+		t.end()
+	})
+
+	t.test('should stop when a function returns false', t => {
+		const result = makePipe((t, m, o, next) => next(), (t, m, o, next) => next(), () => false, t.fail) ()
+		t.false(result)
+		t.end()
+	})
+
+	t.test('should throw error if first argument is not string, regEx or function', t => {
+		t.throws(makePipe(12, t.fail))
 		t.end()
 	})
 
