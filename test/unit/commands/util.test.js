@@ -175,12 +175,20 @@ tap.test('makePipe', t => {
 		t.end()
 	})
 
-	t.test('should invoke all functions if none returns false', t => {
-		makePipe(() => t.pass('Invokes first')) ()
+	t.test('should move on to next function if it invokes next()', t => {
 		makePipe(
-			(t, m, o, next) => next(),
-			(t, m, o, next) => next(),
-			(t, m, o, next) => next(),
+			(tx, m, o, next) => {
+				t.pass('Invokes first')
+				next()
+			},
+			(tx, m, o, next) => {
+				t.pass('Invokes second')
+				next()
+			},
+			(tx, m, o, next) => {
+				t.pass('Invokes third')
+				next()
+			},
 			() => t.pass('Invokes last')
 		) ()
 		t.end()
