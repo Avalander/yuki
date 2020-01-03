@@ -13,8 +13,8 @@ module.exports =
     )
 
 const FUDGE_MAP = { '-1': '-', '0': ' ', '1': '+' }
-
 const INVALID = 'Invalid expression. Type `roll --help` if you need to know more about this command.'
+const MAX_LIST_LENGTH = 40
 
 const regEx = {
     gGeneral: /(?:[+-])?\d+(?:d(?:\d+|f))?/g,
@@ -68,7 +68,7 @@ const extractExpression = text => {
 
 const formatExpression = expression => {
     const rolls = executeRolls(`+${expression}`)
-    return `**${rolls.result + addNumbers(expression)}** (${rolls.list.join('),(')}) [_${expression}_]`
+    return `**${rolls.result + addNumbers(expression)}**\t${rolls.list.flat().length <= MAX_LIST_LENGTH ? `(${rolls.list.join('),(')}) ` : ''}[_${expression}_]`
 }
 
 const formatResult = expressions => expressions
