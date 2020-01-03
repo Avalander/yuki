@@ -24,10 +24,9 @@ const regEx = {
     tSplitter: /(?=[^+-\d]\d+d(?:\d+|f))/,
 }
 
-const roller = (dice, start, end) => Array(parseInt(dice)).fill(1).reduce((a) => {
-    const roll = randInt(start, end)
-    return { result: a.result + roll, list: a.list.concat(roll) }
-}, { result: 0, list: [] })
+const roller = (dice, start, end) => Array
+    .from({ length: parseInt(dice) }, () => randInt(start, end))
+    .reduce((a, b) => ({ result: a.result + b, list: a.list.concat(b) }), { result: 0, list: [] })
   
 const reduceRolls = (a, b) => {
     const exp = b.match(regEx.roll)
