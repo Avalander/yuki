@@ -13,8 +13,8 @@ module.exports =
     )
 
 const FUDGE_MAP = { '-1': '-', '0': ' ', '1': '+' }
-
 const INVALID = 'Invalid expression. Type `roll --help` if you need to know more about this command.'
+const MAX_LIST_LENGTH = 40
 
 const regEx = {
     gGeneral: /(?:[+-])?\d+(?:d(?:\d+|f))?/g,
@@ -24,10 +24,9 @@ const regEx = {
     tSplitter: /(?=[^+-\d]\d+d(?:\d+|f))/,
 }
 
-const roller = (dice, start, end) => Array(parseInt(dice)).fill(1).reduce((a) => {
-    const roll = randInt(start, end)
-    return { result: a.result + roll, list: a.list.concat(roll) }
-}, { result: 0, list: [] })
+const roller = (dice, start, end) => Array
+    .from({ length: parseInt(dice) }, () => randInt(start, end))
+    .reduce((a, b) => ({ result: a.result + b, list: a.list.concat(b) }), { result: 0, list: [] })
   
 const reduceRolls = (a, b) => {
     const exp = b.match(regEx.roll)
@@ -69,7 +68,7 @@ const extractExpression = text => {
 
 const formatExpression = expression => {
     const rolls = executeRolls(`+${expression}`)
-    return `**${rolls.result + addNumbers(expression)}** (${rolls.list.join('),(')}) [_${expression}_]`
+    return `**${rolls.result + addNumbers(expression)}**\t${rolls.list.flat().length <= MAX_LIST_LENGTH ? `(${rolls.list.join('),(')}) ` : ''}[_${expression}_]`
 }
 
 const formatResult = expressions => expressions
