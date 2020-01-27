@@ -1,4 +1,4 @@
-const { checkClearance, makePipe, textContains } = require('./util')
+const { checkClearance, flatten, makePipe, textContains } = require('./util')
 const { randInt } = require('../randtools')
 
 module.exports =
@@ -68,7 +68,7 @@ const extractExpression = text => {
 
 const formatExpression = expression => {
     const rolls = executeRolls(`+${expression}`)
-    return `**${rolls.result + addNumbers(expression)}**\t${rolls.list.flat().length <= MAX_LIST_LENGTH ? `(${rolls.list.join('),(')}) ` : ''}[_${expression}_]`
+    return `**${rolls.result + addNumbers(expression)}**\t${flatten(rolls.list).length <= MAX_LIST_LENGTH ? `(${rolls.list.join('),(')}) ` : ''}[_${expression}_]`
 }
 
 const formatResult = expressions => expressions
