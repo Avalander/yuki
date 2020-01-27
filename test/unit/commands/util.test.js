@@ -3,6 +3,7 @@ const tap = require('tap')
 const {
   authorIsAdmin,
   checkClearance,
+  flatten,
   makePipe,
   textContains,
   textEquals,
@@ -202,6 +203,36 @@ tap.test('makePipe', t => {
 
 	t.test('should throw error if first argument is not string, regEx or function', t => {
 		t.throws(makePipe(12, t.fail))
+		t.end()
+	})
+
+	t.end()
+})
+
+// flatten
+
+tap.test('flatten', t => {
+	t.test('should return a flattened array', t => {
+		t.equal(
+			JSON.stringify(flatten([ 1, 2, 3, 4, [ 5, 6 ]])),
+			JSON.stringify([ 1, 2, 3, 4, 5, 6 ]),
+			'flattens one level'
+		)
+		t.equal(
+			JSON.stringify(flatten([ 1, [ 2, [ 3, 4 ]]])),
+			JSON.stringify([ 1, 2, 3, 4 ]),
+			'flattens two levels'
+		)
+		t.equal(
+			JSON.stringify(flatten([[ 1, 2 ], [ 3, [ 4, 5 ], [ 6, 7 ]]])),
+			JSON.stringify([ 1, 2, 3, 4, 5, 6, 7 ]),
+			'flattens when arrays are nested in different indexes'
+		)
+		t.equal(
+			JSON.stringify(flatten([ 1, 2, 3 ])),
+			JSON.stringify([ 1, 2, 3 ]),
+			'works when there is no flattening needed'
+		)
 		t.end()
 	})
 
