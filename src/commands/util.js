@@ -42,6 +42,13 @@ module.exports.checkClearance = (message, next) =>
 		: 'You do not have clearance to perform that action.'
 	)
 
+module.exports.flatten = array => array.reduce(
+	(a, b) => Array.isArray(b)
+		? a.concat(this.flatten(b))
+		: a.concat(b),
+	[]
+)
+
 const checkRole = (message) => {
 	return message.guild.roles.filter(({ name }) => [ 'GM', 'Game Master', 'Narrator' ].includes(name))
 		.some(({ members }) => members.has(message.author.id))
