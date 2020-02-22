@@ -20,10 +20,10 @@ const handler = ({ get }) => {
 		const latest_jokes = memory.get('joke:latest-jokes', [])
 			.filter(({ timestamp }) => timestamp > active_period)
 
-		const is_new_joke = ({ id }) =>
+		const isNewJoke = ({ id }) =>
 			latest_jokes.find(j => j.id == id) == null
 		
-		return retry(fetchJoke, is_new_joke, 3)
+		return retry(fetchJoke, isNewJoke, 3)
 			.catch(error => error.success === false
 				? Promise.resolve(error.data)
 				: Promise.reject(error)
