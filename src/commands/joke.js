@@ -44,7 +44,7 @@ const handler = ({ get }) => {
 }
 
 module.exports = makePipe(
-	textMatches(/(send me a )?joke( please)?(\.|!)?/i),
+	textMatches(/^((send|tell) me a )?joke( please)?(\.|!)?$/i),
 	handler({ get })
 )
 
