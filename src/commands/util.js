@@ -53,3 +53,13 @@ const checkRole = (message) => {
 	return message.guild.roles.filter(({ name }) => [ 'GM', 'Game Master', 'Narrator' ].includes(name))
 		.some(({ members }) => members.has(message.author.id))
 }
+
+const retry = (fn, predicate, times = 10) =>
+	fn()
+		.then(data => predicate(data)
+			? data
+			: times > 0
+				? retry(fn, predicate, times - 1)
+				: Promise.reject({ success: false, data })
+		)
+module.exports.retry = retry
