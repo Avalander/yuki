@@ -14,7 +14,7 @@ const handler = ({ get }) => {
 	})
 
 	return (_, message) => fetchMeme()
-		.then(meme => message.channel.send(meme.caption + '\n' + meme.image))
+		.then(meme => message.channel.send(`${meme.caption} ${meme.image}`))
 		.catch(error => {
 			console.error(error)
 			message.channel.send('Something went wrong')
@@ -22,6 +22,11 @@ const handler = ({ get }) => {
 }
 
 module.exports = makePipe(
+	textContains('meme'),
+	handler({ get })
+)
+
+module.exports.factory = ({ get }) => makePipe(
 	textContains('meme'),
 	handler({ get })
 )
