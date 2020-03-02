@@ -23,7 +23,7 @@ const factory = ({ get }) => ({ memory }) => {
 		const active_period = lastDay()
 		const latest_jokes = memory.get(MEMORY_KEY, [])
 			.filter(({ timestamp }) => timestamp >= active_period)
-	 
+
 		return retry(fetchJoke, isNewJoke(latest_jokes), 3)
 			.catch(error => error.success === false
 				? Promise.resolve(error.data)
@@ -57,14 +57,14 @@ const factory = ({ get }) => ({ memory }) => {
 		commands: [
 			makePipe(
 				textMatches(/^((send|tell) me a )?joke( please)?(\.|!)?$/i),
-				sendJoke,
+				sendJoke
 			),
 			makePipe(
 				textMatches(/^repeat( last)? joke( please)?(\.)?$/i),
-				repeatLastJoke,
-			)
+				repeatLastJoke
+			),
 		],
-		shutdown: () => {}
+		shutdown: () => {},
 	}
 }
 
