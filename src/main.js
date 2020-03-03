@@ -10,6 +10,7 @@ const Discord = require('discord.js')
 const makeMemory = require('./memory')
 const { makeStore } = require('./store')
 const commands = require('./commands')
+const initModules = require('./modules')
 const makeHandler = require('./handler')
 
 
@@ -19,15 +20,11 @@ const memory = makeMemory()
 const base_path = path.resolve(__dirname, '..', 'data')
 const store = makeStore(base_path)
 
-client.on('ready', () => {
-	const settings = {
-		...options,
-		version,
-		started_on: Date.now(),
-	}
+
+const startBot = modules => {
 	const handler = makeHandler({
 		client,
-		commands,
+		commands: commands.concat(modules.commands),
 		memory,
 		settings,
 		store,
@@ -36,6 +33,17 @@ client.on('ready', () => {
 	client.on('message', handler)
 
 	console.log(`[${process.pid}] I am ready.`)
+}
+
+client.on('ready', () => {
+	const settings = {
+		...options,
+		version,
+		started_on: Date.now(),
+	}
+
+	initModules({ client, memory, settings, store })
+		.then(startBot)
 })
 
 client.on('error', error => {

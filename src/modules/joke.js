@@ -70,6 +70,7 @@ const factory = ({ get }) => ({ memory }) => {
 
 module.exports = factory({ get })
 module.exports.factory = factory
+module.exports.name = 'joke'
 
 const isNewJoke = latest_jokes => ({ id }) =>
 	latest_jokes.find(j => j.id == id) == null

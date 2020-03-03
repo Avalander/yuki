@@ -17,5 +17,5 @@ module.exports = [
 	persist.save,
 	persist.recall,
 	persist.forget,
-	require('./joke'),
+	// require('./joke'),
 ]
