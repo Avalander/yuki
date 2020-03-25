@@ -18,4 +18,5 @@ module.exports = [
 	persist.recall,
 	persist.forget,
 	require('./joke'),
+	require('./meme'),
 ]
