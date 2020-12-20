@@ -1,6 +1,6 @@
 const test = require('tape')
 
-const makeHandler = require('../handler')
+const makeHandler = require('handler')
 
 
 // Mocks

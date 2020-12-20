@@ -1,5 +1,5 @@
 const { makePipe, textContains } = require('./util')
-const { randElem } = require('../randtools')
+const { randElem } = require('randtools')
 
 module.exports = makePipe(
     textContains('thank', 'cheers', 'brilliant', 'you\'re a star', 'you have my gratitude'),

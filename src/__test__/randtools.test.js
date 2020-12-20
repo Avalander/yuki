@@ -1,6 +1,6 @@
 const test = require('tape')
 
-const rnd = require('../randtools')
+const rnd = require('randtools')
 
 //Random integers
 test('randInt(-2, 2) returns an integer between -2 and 2', t => {

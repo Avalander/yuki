@@ -1,5 +1,4 @@
-const { get } = require('../request')
-
+const { get } = require('request')
 const {
 	makePipe,
 	retry,

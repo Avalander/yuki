@@ -1,6 +1,6 @@
 const test = require('tape')
 
-const makeMemory = require('../memory')
+const makeMemory = require('memory')
 
 
 // memory

@@ -4,7 +4,7 @@ const {
   save,
   recall,
   forget,
-} = require('../persist')
+} = require('commands/persist')
 
 
 // Mocks
@@ -19,7 +19,7 @@ const withStore = ({ save, load, remove }) => ({
 		save,
 		load,
 		remove,
-	}
+	},
 })
 
 
@@ -42,7 +42,7 @@ const withStore = ({ save, load, remove }) => ({
 					t.equal(k, key)
 					t.equal(v, value)
 					return Promise.resolve()
-				}
+				},
 			}))
 			.then(() => {
 				t.end()

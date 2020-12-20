@@ -1,6 +1,6 @@
 const test = require('tape')
 
-const { makePipe, textEquals, textContains, textMatches, authorIsAdmin, checkClearance } = require('../util')
+const { makePipe, textEquals, textContains, textMatches, authorIsAdmin, checkClearance } = require('commands/util')
 
 //makePipe
 test('makePipe should use textEquals when first argument is a string', t => {
@@ -110,10 +110,10 @@ test('textMatches should return false when text does not match regex', t => {
 test('authorIsAdmin should invoke next when author is admin', t => {
 	t.plan(1)
 	const message = {
-		author: { id: 1 }
+		author: { id: 1 },
 	}
 	const settings = {
-		admins: [ 1 ]
+		admins: [ 1 ],
 	}
 	authorIsAdmin('ponies', message, { settings }, () => t.pass())
 })
@@ -127,7 +127,7 @@ test('authorIsAdmin should deny request when author is not admin', t => {
 		},
 	}
 	const settings = {
-		admins: [ 1 ]
+		admins: [ 1 ],
 	}
 	authorIsAdmin('ponies', message, { settings }, () => t.fail())
 })
