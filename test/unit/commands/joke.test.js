@@ -5,7 +5,7 @@ const {
 	runWith,
 } = require('helpers')
 
-const { factory } = require('commands/joke')
+const { factory } = require('src/commands/joke')
 
 
 // Mocks

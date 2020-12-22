@@ -12,7 +12,7 @@
     "bot:restart": "NODE_PATH=. ./scripts/main.sh restart",
     "test": "NODE_PATH=. tape 'src/**/*.test.js' | tap-dot",
     "test:coverage": "nyc npm run test",
-    "test:unit": "NODE_PATH=src:test/unit tap --reporter=specy 'test/unit/**/*.test.js'",
+    "test:unit": "NODE_PATH=.:test/unit tap --reporter=specy 'test/unit/**/*.test.js'",
     "lint": "eslint src/**/*.js"
   },
   "keywords": [],
