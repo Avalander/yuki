@@ -1,4 +1,4 @@
-const { makePipe, textMatches } = require('./util')
+const { makePipe, textMatches } = require('src/commands/util')
 
 module.exports.save = makePipe(
     textMatches(/store (\w+)\s?:(.+)/i),

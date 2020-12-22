@@ -50,5 +50,5 @@ module.exports = {
         writeFile: promisify(fs.writeFile),
         mkdir: mkdirp,
         removeFile: promisify(fs.unlink),
-    })
+    }),
 }

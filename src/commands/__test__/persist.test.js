@@ -4,7 +4,7 @@ const {
   save,
   recall,
   forget,
-} = require('commands/persist')
+} = require('src/commands/persist')
 
 
 // Mocks

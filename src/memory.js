@@ -18,6 +18,6 @@ module.exports = () => {
         get: key => {
             caches[key] = caches[key] || ChannelMemory()
             return caches[key]
-        }
+        },
     }
 }

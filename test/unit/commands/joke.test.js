@@ -34,6 +34,8 @@ const getJokeSeries = (jokes) => {
 	}
 }
 
+const fn = ({ a = 12, b = false} = {}) => ({ a, b })
+
 const withMemory = ({
 	get = () => [],
 	set = () => {},

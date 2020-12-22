@@ -1,6 +1,6 @@
 const test = require('tape')
 
-const { makePipe, textEquals, textContains, textMatches, authorIsAdmin, checkClearance } = require('commands/util')
+const { makePipe, textEquals, textContains, textMatches, authorIsAdmin, checkClearance } = require('src/commands/util')
 
 //makePipe
 test('makePipe should use textEquals when first argument is a string', t => {

@@ -1,10 +1,10 @@
 const readline = require('readline')
 const path = require('path')
 
-const commands = require('./commands')
-const makeMemory = require('./memory')
-const makeHandler = require('./handler')
-const { makeStore } = require('./store')
+const commands = require('src/commands')
+const makeMemory = require('src/memory')
+const makeHandler = require('src/handler')
+const { makeStore } = require('src/store')
 
 const base_path = path.resolve(__dirname, 'data')
 const store = makeStore(base_path)
@@ -21,7 +21,7 @@ const settings = {
 const client = {
 	user: {
 		id: 1,
-	}
+	},
 }
 const memory = makeMemory()
 
