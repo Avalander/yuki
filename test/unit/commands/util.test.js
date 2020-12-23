@@ -8,7 +8,7 @@ const {
   textContains,
   textEquals,
   textMatches,
-} = require('commands/util')
+} = require('src/commands/util')
 
 
 // textEquals
@@ -87,10 +87,10 @@ tap.test('textMatches', t => {
 tap.test('authorIsAdmin', t => {
 	t.test('authorIsAdmin should invoke next when author is admin', t => {
 		const message = {
-			author: { id: 1 }
+			author: { id: 1 },
 		}
 		const settings = {
-			admins: [ 1 ]
+			admins: [ 1 ],
 		}
 		authorIsAdmin('ponies', message, { settings }, () => t.pass())
 		t.end()
@@ -104,7 +104,7 @@ tap.test('authorIsAdmin', t => {
 			},
 		}
 		const settings = {
-			admins: [ 1 ]
+			admins: [ 1 ],
 		}
 		authorIsAdmin('ponies', message, { settings }, () => t.fail())
 		t.end()

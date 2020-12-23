@@ -1,6 +1,6 @@
 const tap = require('tap')
 
-const meme = require('commands/meme')
+const meme = require('src/commands/meme')
 const { factory } = meme
 const { each } = require('helpers')
 

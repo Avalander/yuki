@@ -1,10 +1,9 @@
-const { get } = require('../request')
-
+const { get } = require('src/request')
 const {
 	makePipe,
 	retry,
 	textMatches,
-} = require('./util')
+} = require('src/commands/util')
 
 
 const handler = ({ get }) => {

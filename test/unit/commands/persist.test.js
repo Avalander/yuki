@@ -4,7 +4,7 @@ const {
   save,
   recall,
   forget,
-} = require('commands/persist')
+} = require('src/commands/persist')
 
 const {
   each,
@@ -23,7 +23,7 @@ const withStore = ({ save, load, remove }) => ({
 		save,
 		load,
 		remove,
-	}
+	},
 })
 
 
@@ -44,7 +44,7 @@ tap.test('persist.save', t => {
           t.same(k, key, `Is saved with key '${k}'`)
           t.same(v, value, `Is saved with value '${v}'`)
           return Promise.resolve()
-        }
+        },
       }),
     })
 
@@ -124,7 +124,7 @@ tap.test('persist.forget', t => {
         remove: key => {
           t.same(key, 'pony')
           return Promise.resolve()
-        }
+        },
       }),
     })
 

@@ -1,6 +1,6 @@
 const test = require('tape')
 
-const { factory } = require('../store')
+const { factory } = require('src/store')
 
 
 // Mocks

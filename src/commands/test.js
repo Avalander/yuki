@@ -1,4 +1,4 @@
-const { makePipe, textEquals, authorIsAdmin } = require('./util')
+const { makePipe, textEquals, authorIsAdmin } = require('src/commands/util')
 
 
 module.exports = makePipe(

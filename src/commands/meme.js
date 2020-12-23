@@ -1,8 +1,8 @@
-const { get } = require('../request')
+const { get } = require('src/request')
 const {
 	makePipe,
 	textContains,
-} = require('./util')
+} = require('src/commands/util')
 
 const handler = ({ get }) => {
 	const fetchMeme = () => get({

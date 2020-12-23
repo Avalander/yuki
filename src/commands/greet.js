@@ -1,4 +1,4 @@
-const { makePipe, textEquals } = require('./util')
+const { makePipe, textEquals } = require('src/commands/util')
 
 
 const MORNING = 'おはよう'

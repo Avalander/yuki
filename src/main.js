@@ -1,16 +1,16 @@
 'use strict'
 
-const { version } = require('../package.json')
-const { bot_token, ...options } = require('../settings.json')
+const { version } = require('package.json')
+const { bot_token, ...options } = require('settings.json')
 
 const path = require('path')
 
 const Discord = require('discord.js')
 
-const makeMemory = require('./memory')
-const { makeStore } = require('./store')
-const commands = require('./commands')
-const makeHandler = require('./handler')
+const makeMemory = require('src/memory')
+const { makeStore } = require('src/store')
+const commands = require('src/commands')
+const makeHandler = require('src/handler')
 
 
 const client = new Discord.Client()

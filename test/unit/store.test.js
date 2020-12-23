@@ -2,7 +2,7 @@ const tap = require('tap')
 
 const { each } = require('helpers')
 
-const { factory } = require('store')
+const { factory } = require('src/store')
 
 
 // Mocks
