@@ -1,5 +1,5 @@
 const { checkClearance, makePipe, textContains } = require('./util')
-const rnd = require('randtools')
+const rnd = require('src/randtools')
 
 module.exports = [
     makePipe(
