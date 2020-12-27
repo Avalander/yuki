@@ -22,19 +22,19 @@ const save = store =>
             .save(KEY, JSON.stringify(data))
             .then(() => data)
 
-const findCharacter = (character, data) =>
-    data.find(x => x.character === character)
-    || makeCharacter(character)
+const findCharacter = (name, data) =>
+    data.find(x => x.name === name)
+    || makeCharacter(name)
 
-const findCharacterOrFail = character =>
+const findCharacterOrFail = name =>
     data => {
-        const characterObject = data.find(x => x.character === character)
-        if (!characterObject) throw new Error('Character not found')
-        return characterObject
+        const character = data.find(x => x.name === name)
+        if (!character) throw new Error('Character not found')
+        return character
     }
 
-const makeCharacter = character => ({
-    character,
+const makeCharacter = name => ({
+    name,
     points: 0,
     refresh: 0,
 })
@@ -44,73 +44,73 @@ const updateCharacter = (update, character) => ({
     ...update,
 })
 
-const refreshFate = (character) =>
+const refreshFate = name =>
     data => {
-        const characterObject = findCharacterOrFail(character)(data)
-        const points = Math.max(characterObject.points, characterObject.refresh)
+        const character = findCharacterOrFail(name)(data)
+        const points = Math.max(character.points, character.refresh)
         return data
-            .filter(x => x.character !== character)
-            .concat(updateCharacter({ points }, characterObject))
+            .filter(x => x.name !== name)
+            .concat(updateCharacter({ points }, character))
     }
 
-const setRefresh = (refresh, character) =>
+const setRefresh = (refresh, name) =>
     data => {
-        const characterObject = findCharacter(character, data)
+        const character = findCharacter(name, data)
         return data
-            .filter(x => x.character !== character)
-            .concat(updateCharacter({ refresh: Number(refresh) }, characterObject))
+            .filter(x => x.name !== name)
+            .concat(updateCharacter({ refresh: Number(refresh) }, character))
     }
 
-const gainFate = (character, increase) =>
+const gainFate = (name, increase) =>
     data => {
-        const characterObject = findCharacterOrFail(character)(data)
+        const character = findCharacterOrFail(name)(data)
         return data
-            .filter(x => x.character !== character)
-            .concat(updateCharacter({ points: characterObject.points + Number(increase) }, characterObject))
+            .filter(x => x.name !== name)
+            .concat(updateCharacter({ points: character.points + Number(increase) }, character))
     }
 
 module.exports.gain = makePipe(
     textMatches(regExps.gainFate),
     (text, message, { store }) => {
-        const [ , character, increase = 1 ] = text.match(regExps.gainFate)
+        const [ , name, increase = 1 ] = text.match(regExps.gainFate)
         return loadOrCreate(store)
-            .then(gainFate(character, increase))
+            .then(gainFate(name, increase))
             .then(save(store))
-            .then(findCharacterOrFail(character))
-            .then(data => message.channel.send(`${character}'s fate is now ${data.points}`))
+            .then(findCharacterOrFail(name))
+            .then(data => message.channel.send(`${name}'s fate is now ${data.points}`))
     }
 )
 
 module.exports.getCharacter = makePipe(
     textMatches(regExps.getCharacter),
     (text, message, { store }) => {
-        const [ , character ] = text.match(regExps.getCharacter)
+        const [ , name ] = text.match(regExps.getCharacter)
         return loadOrCreate(store)
-            .then(findCharacterOrFail(character))
-            .then(data => message.channel.send(`**${data.character}** F: ${data.points}, R:${data.refresh}`))
+            .then(findCharacterOrFail(name))
+            .then(data => message.channel.send(`**${data.name}** F: ${data.points}, R:${data.refresh}`))
     }
 )
 
 module.exports.refresh = makePipe(
     textMatches(regExps.refresh),
     (text, message, { store }) => {
-        const [ , character ] = text.match(regExps.refresh)
+        const [ , name ] = text.match(regExps.refresh)
         return loadOrCreate(store)
-            .then(refreshFate(character))
+            .then(refreshFate(name))
             .then(save(store))
-            .then(findCharacterOrFail(character))
-            .then(data => message.channel.send(`${character} refreshed. Current fate: ${data.points}`))
+            .then(findCharacterOrFail(name))
+            .then(data => message.channel.send(`${name} refreshed. Current fate: ${data.points}`))
     }
 )
 
 module.exports.setRefresh = makePipe(
     textMatches(regExps.setRefresh),
     (text, message, { store }) => {
-        const [ , character, refresh ] = text.match(regExps.setRefresh)
+        const [ , name, refresh ] = text.match(regExps.setRefresh)
         return loadOrCreate(store)
-            .then(setRefresh(refresh, character))
+            .then(setRefresh(refresh, name))
             .then(save(store))
-            .then(() => message.channel.send(`${character}'s refresh set to ${refresh}.`))
+            .then(() => message.channel.send(`${name}'s refresh set to ${refresh}.`))
     }
 )
 
