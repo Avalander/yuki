@@ -3,7 +3,9 @@ const persist = require('./persist')
 const remember = require('./remember')
 
 module.exports = [
+	fate.erase,
 	fate.list,
+	fate.gain,
 	fate.getCharacter,
 	fate.refresh,
 	fate.setRefresh,

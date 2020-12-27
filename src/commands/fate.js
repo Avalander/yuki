@@ -3,7 +3,8 @@ const { makePipe, textMatches } = require('src/commands/util')
 const KEY = 'fate'
 
 const regExps = {
-    getCharacter: /fate (\w+)$/i,
+    gainFate: /fate (\w+) gain\s?(\d+)?/i,
+    getCharacter: /fate (\w+) show/i,
     refresh: /fate (\w+) refresh/i,
     setRefresh: /fate (\w+) set refresh(?::)? (\d+)/i,
 }
@@ -55,11 +56,30 @@ const refreshFate = (character) =>
 const setRefresh = (refresh, character) =>
     data => {
         const characterObject = findCharacter(character, data)
-        const updatedRefresh = refresh
         return data
             .filter(x => x.character !== character)
-            .concat(updateCharacter({ refresh: updatedRefresh }, characterObject))
+            .concat(updateCharacter({ refresh: Number(refresh) }, characterObject))
     }
+
+const gainFate = (character, increase) =>
+    data => {
+        const characterObject = findCharacterOrFail(character)(data)
+        return data
+            .filter(x => x.character !== character)
+            .concat(updateCharacter({ points: characterObject.points + Number(increase) }, characterObject))
+    }
+
+module.exports.gain = makePipe(
+    textMatches(regExps.gainFate),
+    (text, message, { store }) => {
+        const [ , character, increase = 1 ] = text.match(regExps.gainFate)
+        return loadOrCreate(store)
+            .then(gainFate(character, increase))
+            .then(save(store))
+            .then(findCharacterOrFail(character))
+            .then(data => message.channel.send(`${character}'s fate is now ${data.points}`))
+    }
+)
 
 module.exports.getCharacter = makePipe(
     textMatches(regExps.getCharacter),
@@ -98,4 +118,10 @@ module.exports.list = makePipe(
     textMatches(/fate list/),
     (text, message, { store }) => store.load(KEY)
         .then(data => message.channel.send(`Here: ${data}`))
+)
+
+module.exports.erase = makePipe(
+    textMatches(/fate erase/i),
+    (_, message, { store }) => store.remove(KEY)
+        .then(() => message.channel.send('All data removed.'))
 )
