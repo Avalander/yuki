@@ -1,7 +1,12 @@
+const fate = require('./fate')
 const persist = require('./persist')
 const remember = require('./remember')
 
 module.exports = [
+	fate.list,
+	fate.getCharacter,
+	fate.refresh,
+	fate.setRefresh,
 	require('./status'),
 	require('./source'),
 	require('./greet'),
