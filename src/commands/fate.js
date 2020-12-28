@@ -3,6 +3,8 @@ const { makePipe, textMatches } = require('src/commands/util')
 const KEY = 'fate'
 
 const regExps = {
+    erase: /fate (\w+)?:?\s?erase/i,
+    list: /fate list/i,
     gainFate: /fate (\w+) (?:g|gain):?\s?(\d+)?\D*$/i,
     getCharacter: /fate (\w+) (?:sh|show)/i,
     refresh: /fate (\w+) (?:r|refresh)/i,
@@ -87,6 +89,14 @@ const spendFate = (name, decrease = 1) =>
             .concat(updateCharacter({ points: character.points - decrease }, character))
     }
 
+const eraseAll = store => store.remove(KEY)
+    .then(() => 'All data')
+
+const eraseOne = (store, name) => loadOrCreate(store)
+    .then(data => data.filter(x => x.name != name))
+    .then(save(store))
+    .then(() => name)
+
 module.exports.gainFate = makePipe(
     textMatches(regExps.gainFate),
     (text, message, { store }) => {
@@ -150,7 +160,7 @@ module.exports.spendFate = makePipe(
 )
 
 module.exports.listFate = makePipe(
-    textMatches(/fate list/),
+    textMatches(regExps.list),
     (text, message, { store }) => loadOrCreate(store)
         .then(data => data.map(x => x.name))
         .then(data => message.channel.send(`I'm currently keeping track of: ${data.join(', ')}`))
@@ -158,7 +168,14 @@ module.exports.listFate = makePipe(
 )
 
 module.exports.eraseFate = makePipe(
-    textMatches(/fate erase/i),
-    (_, message, { store }) => store.remove(KEY)
-        .then(() => message.channel.send('All data removed.'))
+    textMatches(regExps.erase),
+    (text, message, { store }) => {
+        const [ , name ] = text.match(regExps.erase)
+        const fn = name
+            ? eraseOne
+            : eraseAll
+
+        return fn(store, name)
+            .then(data => message.channel.send(`${data} removed.`))
+    }
 )
