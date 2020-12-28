@@ -3,10 +3,11 @@ const { makePipe, textMatches } = require('src/commands/util')
 const KEY = 'fate'
 
 const regExps = {
-    gainFate: /fate (\w+) gain\s?(\d+)?/i,
-    getCharacter: /fate (\w+) show/i,
-    refresh: /fate (\w+) refresh/i,
-    setRefresh: /fate (\w+) set refresh(?::)? (\d+)/i,
+    gainFate: /fate (\w+) (?:g|gain):?\s?(\d+)?\D*$/i,
+    getCharacter: /fate (\w+) (?:sh|show)/i,
+    refresh: /fate (\w+) (?:r|refresh)/i,
+    setRefresh: /fate (\w+) (?:sr|set refresh):?\s?(\d+)\D*$/i,
+    spend: /fate (\w+) (?:sp|spend):?\s?(\d+)?\D*$/i,
 }
 
 const create = store => store.save(KEY, '[]')
@@ -61,7 +62,7 @@ const setRefresh = (refresh, name) =>
             .concat(updateCharacter({ refresh: Number(refresh) }, character))
     }
 
-const gainFate = (name, increase) =>
+const gainFate = (name, increase = 1) =>
     data => {
         const character = findCharacterOrFail(name)(data)
         return data
@@ -69,10 +70,27 @@ const gainFate = (name, increase) =>
             .concat(updateCharacter({ points: character.points + Number(increase) }, character))
     }
 
-module.exports.gain = makePipe(
+const spendFate = (name, decrease = 1) =>
+    data => {
+        const character = findCharacterOrFail(name)(data)
+
+        if (character.points - decrease < 0) {
+            const error = {
+                code: 1,
+                message: `${character.name} has only ${character.points} points.`,
+            }
+            throw error
+        }
+
+        return data
+            .filter(x => x.name !== name)
+            .concat(updateCharacter({ points: character.points - decrease }, character))
+    }
+
+module.exports.gainFate = makePipe(
     textMatches(regExps.gainFate),
     (text, message, { store }) => {
-        const [ , name, increase = 1 ] = text.match(regExps.gainFate)
+        const [ , name, increase ] = text.match(regExps.gainFate)
         return loadOrCreate(store)
             .then(gainFate(name, increase))
             .then(save(store))
@@ -81,7 +99,7 @@ module.exports.gain = makePipe(
     }
 )
 
-module.exports.getCharacter = makePipe(
+module.exports.getCharacterFate = makePipe(
     textMatches(regExps.getCharacter),
     (text, message, { store }) => {
         const [ , name ] = text.match(regExps.getCharacter)
@@ -91,7 +109,7 @@ module.exports.getCharacter = makePipe(
     }
 )
 
-module.exports.refresh = makePipe(
+module.exports.refreshFate = makePipe(
     textMatches(regExps.refresh),
     (text, message, { store }) => {
         const [ , name ] = text.match(regExps.refresh)
@@ -103,7 +121,7 @@ module.exports.refresh = makePipe(
     }
 )
 
-module.exports.setRefresh = makePipe(
+module.exports.setRefreshFate = makePipe(
     textMatches(regExps.setRefresh),
     (text, message, { store }) => {
         const [ , name, refresh ] = text.match(regExps.setRefresh)
@@ -114,13 +132,32 @@ module.exports.setRefresh = makePipe(
     }
 )
 
-module.exports.list = makePipe(
-    textMatches(/fate list/),
-    (text, message, { store }) => store.load(KEY)
-        .then(data => message.channel.send(`Here: ${data}`))
+module.exports.spendFate = makePipe(
+    textMatches(regExps.spend),
+    (text, message, { store }) => {
+        const [ , name, decrease ] = text.match(regExps.spend)
+        return loadOrCreate(store)
+            .then(spendFate(name, decrease))
+            .then(save(store))
+            .then(findCharacterOrFail(name))
+            .then(data => message.channel.send(`${name}'s fate is now ${data.points}`))
+            .catch(error =>
+                error.code == 1
+                    ? message.channel.send(error.message)
+                    : Promise.reject(error) 
+            )
+    }
 )
 
-module.exports.erase = makePipe(
+module.exports.listFate = makePipe(
+    textMatches(/fate list/),
+    (text, message, { store }) => loadOrCreate(store)
+        .then(data => data.map(x => x.name))
+        .then(data => message.channel.send(`I'm currently keeping track of: ${data.join(', ')}`))
+
+)
+
+module.exports.eraseFate = makePipe(
     textMatches(/fate erase/i),
     (_, message, { store }) => store.remove(KEY)
         .then(() => message.channel.send('All data removed.'))
