@@ -5,12 +5,16 @@ const KEY = 'fate'
 const regExps = {
     erase: /fate (\w+)?:?\s?erase/i,
     list: /fate list/i,
-    gainFate: /fate (\w+) (?:g|gain):?\s?(\d+)?\D*$/i,
-    getCharacter: /fate (\w+) (?:sh|show)/i,
+    gain: /fate (\w+) (?:g|gain):?\s?(\d+)?\D*$/i,
     refresh: /fate (\w+) (?:r|refresh)/i,
     setRefresh: /fate (\w+) (?:sr|set refresh):?\s?(\d+)\D*$/i,
-    spend: /fate (\w+) (?:sp|spend):?\s?(\d+)?\D*$/i,
+    show: /fate (\w+) (?:sh|show)/i,
+    spend: /fate (\w+(?:,\s?\w+)*) (?:sp|spend):?\s?(\d+)?\D*$/i,
 }
+
+const makeCharacterList = str => str.split(/,\s?/)
+
+const makePointsMsg = character => `**${character.name}**: ${character.points}`
 
 const create = store => store.save(KEY, '[]')
     .then(() => '[]')
@@ -32,9 +36,13 @@ const findCharacter = (name, data) =>
 const findCharacterOrFail = name =>
     data => {
         const character = data.find(x => x.name === name)
-        if (!character) throw new Error('Character not found')
+        if (!character) throw { code: 2, message: `${name} not found.`}
         return character
     }
+
+const findCharactersOrFail = names =>
+    data =>
+        names.map(x => findCharacterOrFail(x)(data))
 
 const makeCharacter = name => ({
     name,
@@ -72,21 +80,21 @@ const gainFate = (name, increase = 1) =>
             .concat(updateCharacter({ points: character.points + Number(increase) }, character))
     }
 
-const spendFate = (name, decrease = 1) =>
+const spendFate = (str, decrease = 1) =>
     data => {
-        const character = findCharacterOrFail(name)(data)
+        const names = makeCharacterList(str)
+        const characters = findCharactersOrFail(names)(data)
 
-        if (character.points - decrease < 0) {
-            const error = {
+        characters.forEach(x => {
+            if (x.points - decrease < 0) throw {
                 code: 1,
-                message: `${character.name} has only ${character.points} points.`,
+                message: `${x.name} has only ${x.points} points.`,
             }
-            throw error
-        }
+        })
 
         return data
-            .filter(x => x.name !== name)
-            .concat(updateCharacter({ points: character.points - decrease }, character))
+            .filter(x => !names.includes(x.name))
+            .concat(characters.map(x => updateCharacter({ points: x.points - decrease }, x)))
     }
 
 const eraseAll = store => store.remove(KEY)
@@ -98,7 +106,7 @@ const eraseOne = (store, name) => loadOrCreate(store)
     .then(() => name)
 
 module.exports.gainFate = makePipe(
-    textMatches(regExps.gainFate),
+    textMatches(regExps.gain),
     (text, message, { store }) => {
         const [ , name, increase ] = text.match(regExps.gainFate)
         return loadOrCreate(store)
@@ -106,16 +114,6 @@ module.exports.gainFate = makePipe(
             .then(save(store))
             .then(findCharacterOrFail(name))
             .then(data => message.channel.send(`${name}'s fate is now ${data.points}`))
-    }
-)
-
-module.exports.getCharacterFate = makePipe(
-    textMatches(regExps.getCharacter),
-    (text, message, { store }) => {
-        const [ , name ] = text.match(regExps.getCharacter)
-        return loadOrCreate(store)
-            .then(findCharacterOrFail(name))
-            .then(data => message.channel.send(`**${data.name}** F: ${data.points}, R:${data.refresh}`))
     }
 )
 
@@ -130,7 +128,7 @@ module.exports.refreshFate = makePipe(
             .then(data => message.channel.send(`${name} refreshed. Current fate: ${data.points}`))
     }
 )
-
+    
 module.exports.setRefreshFate = makePipe(
     textMatches(regExps.setRefresh),
     (text, message, { store }) => {
@@ -142,15 +140,25 @@ module.exports.setRefreshFate = makePipe(
     }
 )
 
+module.exports.showFate = makePipe(
+    textMatches(regExps.show),
+    (text, message, { store }) => {
+        const [ , name ] = text.match(regExps.show)
+        return loadOrCreate(store)
+            .then(findCharacterOrFail(name))
+            .then(data => message.channel.send(`**${data.name}** F: ${data.points}, R:${data.refresh}`))
+    }
+)
+
 module.exports.spendFate = makePipe(
     textMatches(regExps.spend),
     (text, message, { store }) => {
-        const [ , name, decrease ] = text.match(regExps.spend)
+        const [ , names, decrease ] = text.match(regExps.spend)
         return loadOrCreate(store)
-            .then(spendFate(name, decrease))
+            .then(spendFate(names, decrease))
             .then(save(store))
-            .then(findCharacterOrFail(name))
-            .then(data => message.channel.send(`${name}'s fate is now ${data.points}`))
+            .then(findCharactersOrFail(makeCharacterList(names)))
+            .then(data => message.channel.send(`Fate spent. Current status: ${data.map(makePointsMsg).join(', ')}.`))
             .catch(error =>
                 error.code == 1
                     ? message.channel.send(error.message)
@@ -161,7 +169,7 @@ module.exports.spendFate = makePipe(
 
 module.exports.listFate = makePipe(
     textMatches(regExps.list),
-    (text, message, { store }) => loadOrCreate(store)
+    (_text, message, { store }) => loadOrCreate(store)
         .then(data => data.map(x => x.name))
         .then(data => message.channel.send(`I'm currently keeping track of: ${data.join(', ')}`))
 
