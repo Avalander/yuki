@@ -2,6 +2,7 @@ const persist = require('./persist')
 const remember = require('./remember')
 
 module.exports = [
+	...Object.values(require('./fate')),
 	require('./status'),
 	require('./source'),
 	require('./greet'),

@@ -12,6 +12,8 @@ const evalFirst = first => {
 	throw new Error(`Expected function, string or regexp, but found ${typeof first}`)
 }
 
+module.exports.pipe = (...fns) => x => fns.reduce((a, fn) => fn(a), x)
+
 module.exports.textEquals = (...expect) => (text, message, options, next) =>
 	(expect.includes(text)
 		? next()
