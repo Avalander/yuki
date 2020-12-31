@@ -1,4 +1,4 @@
-const { makePipe, textMatches } = require('src/commands/util')
+const { makePipe, pipe, textMatches } = require('src/commands/util')
 
 const KEY = 'fate'
 
@@ -79,14 +79,30 @@ const refreshPoints = character => {
     return updateCharacter({ points }, character)
 }
 
-const refreshFate = str =>
-    data => {
-        const names = makeCharacterList(str)
-        const characters = findCharactersOrFail(names)(data)
-        return data
-            .filter(x => !names.includes(x.name))
-            .concat(characters.map(refreshPoints))
+const updateCharacters = transform => str => data => {
+    const names = makeCharacterList(str)
+    const characters = findCharactersOrFail(names) (data)
+
+    return data
+        .filter(x => !names.includes(x.name))
+        .concat(characters.map(transform))
+}
+
+const expectPositiveFate = characters => {
+    const illegal = characters.find(({ points }) => points < 0)
+    if (illegal != null) throw {
+        code: 1,
+        message: `${illegal.name} has only ${illegal.points} points.`,
     }
+    return characters
+}
+
+const gainFate = (str, increase = 1) => updateCharacters(updatePoints(increase)) (str)
+const refreshFate = updateCharacters(refreshPoints)
+const spendFate = (str, decrease = 1) => pipe(
+    updateCharacters(updatePoints(-decrease)) (str),
+    expectPositiveFate
+)
 
 const setRefresh = (refresh, str) =>
     data => {
@@ -96,32 +112,6 @@ const setRefresh = (refresh, str) =>
         return data
             .filter(x => !names.includes(x.name))
             .concat(characters.map(updateRefresh(refresh)))
-    }
-
-const gainFate = (str, increase = 1) =>
-    data => {
-        const names = makeCharacterList(str)
-        const characters = findCharactersOrFail(names)(data)
-        return data
-            .filter(x => !names.includes(x.name))
-            .concat(characters.map(updatePoints(increase)))
-    }
-
-const spendFate = (str, decrease = 1) =>
-    data => {
-        const names = makeCharacterList(str)
-        const characters = findCharactersOrFail(names)(data)
-
-        characters.forEach(x => {
-            if (x.points - decrease < 0) throw {
-                code: 1,
-                message: `${x.name} has only ${x.points} points.`,
-            }
-        })
-
-        return data
-            .filter(x => !names.includes(x.name))
-            .concat(characters.map(updatePoints(-decrease)))
     }
 
 const eraseAll = store => store.remove(KEY)
@@ -167,7 +157,7 @@ module.exports.setRefreshFate = makePipe(
             .then(setRefresh(refresh, names))
             .then(save(store))
             .then(findCharactersOrFail(names))
-            .then(data => message.channel.send(`Fate refreshed. Current refresh: ${data.map(makeRefreshsMsg).join(', ')}.`))
+            .then(data => message.channel.send(`Refresh set. Current refresh: ${data.map(makeRefreshsMsg).join(', ')}.`))
     }
 )
 
